@@ -1,0 +1,53 @@
+[
+    {
+      "key": "baseUrl",
+      "type": "input",
+      "defaultValue": "https://customer-test.topdesk.net",
+      "templateOptions": {
+        "label": "url",
+        "placeholder": "Please enter the url to the TOPdesk api",
+        "required": true
+      }
+    },
+    {
+      "key": "username",
+      "type": "input",
+      "defaultValue": "",
+      "templateOptions": {
+        "label": "Username",
+        "placeholder": "Please enter the username",
+        "required": true
+      }
+    },
+    {
+      "key": "apikey",
+      "type": "input",
+      "defaultValue": "",
+      "templateOptions": {
+        "label": "Application password",
+        "type": "password",
+        "placeholder": "Please enter the application password",
+        "required": true
+      }
+    },
+    {
+      "key": "personArchivingReason",
+      "type": "input",
+      "defaultValue": "Persoon uit organisatie",
+      "templateOptions": {
+        "label": "Archiving reason",
+        "description": "Archiving reason is required when archiving a person",
+        "required": true
+      }
+    },
+    {
+      "key": "isDebug",
+      "type": "checkbox",
+      "defaultValue": false,
+      "templateOptions": {
+        "label": "Toggle debug logging",
+        "required": false
+      }
+    }
+  ]
+  
