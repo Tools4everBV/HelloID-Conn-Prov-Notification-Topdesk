@@ -1,5 +1,5 @@
 #####################################################
-# HelloID-Conn-Prov-Notification-Topdesk-Change
+# HelloID-Conn-Prov-Notification-Topdesk-Incident
 #
 # Version: 0.1.0
 #####################################################
@@ -154,6 +154,20 @@ function Confirm-Description {
     }
 }
 
+function Convert-To-HTML-Tag {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $Description
+    )
+    $Description = $Description | ConvertTo-Json
+    $Description = $Description.Replace('\n', '<br>')
+    $Description = $Description | ConvertFrom-Json
+    Write-Output $Description
+}
+
 function Get-TopdeskPersonByCorrelationAttribute {
     [CmdletBinding()]
     param (
@@ -217,37 +231,6 @@ function Get-TopdeskPersonByCorrelationAttribute {
                 IsError = $true
             })
     }
-}
-
-function Get-TopdeskChangeType {
-    [CmdletBinding()]
-    param (
-        [Parameter(Mandatory)]
-        [string]
-        $changeType # 'simple' or 'extensive'
-    )
-
-    # Show audit message if type is empty
-    if ([string]::IsNullOrEmpty($changeType)) {
-        $errorMessage = "The change type is not set. It should be set to 'simple' or 'extensive'"
-        $outputContext.AuditLogs.Add([PSCustomObject]@{
-                Message = $errorMessage
-                IsError = $true
-            })
-        return
-    }
-
-    # Show audit message if type is not 
-    if (-not ($changeType -eq 'simple' -or $changeType -eq 'extensive')) {
-        $errorMessage = "The configured change type [$changeType] is invalid. It should be set to 'simple' or 'extensive'"
-        $outputContext.AuditLogs.Add([PSCustomObject]@{
-                Message = $errorMessage
-                IsError = $true
-            })
-        return
-    }
-
-    return $ChangeType.ToLower()
 }
 
 function Set-TopdeskPersonArchiveStatus {
@@ -333,155 +316,364 @@ function Set-TopdeskPersonArchiveStatus {
     }
 }
 
-function New-TopdeskChange {
+function New-TopdeskIncident {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory)]
         [ValidateNotNullOrEmpty()]
         [string]
         $BaseUrl,
-
         [Parameter(Mandatory)]
         [System.Collections.IDictionary]
         $Headers,
-
         [Parameter(Mandatory)]
         [ValidateNotNullOrEmpty()]
         [PsObject]
-        $TopdeskChange
+        $TopdeskIncident
     )
-
     $splatParams = @{
-        Uri     = "$BaseUrl/tas/api/operatorChanges"
+        Uri     = "$BaseUrl/tas/api/incidents"
         Method  = 'POST'
         Headers = $Headers
-        Body    = $TopdeskChange | ConvertTo-Json
+        Body    = $TopdeskIncident | ConvertTo-Json
     }
-    Write-Verbose ($TopdeskChange | ConvertTo-Json)
-    $change = Invoke-TopdeskRestMethod @splatParams
-
-    Write-Verbose "Created change with number [$($change.number)]"
-
-    Write-Output $change
+    #Write-Verbose ($TopdeskIncident | ConvertTo-Json)
+    $incident = Invoke-TopdeskRestMethod @splatParams
+    Write-Output $incident
 }
-#endregion
+
+function Get-TopdeskIdentifier {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $BaseUrl,
+        [Parameter(Mandatory)]
+        [System.Collections.IDictionary]
+        $Headers, 
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $Class,    
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
+        [Object]
+        $Value,
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
+        [Object]
+        $Endpoint,
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
+        [Object]
+        $SearchAttribute
+    )
+
+    # Check if property exists in the template object set in the mapping
+    if (-not($Template.PSobject.Properties.Name -Contains $Class)) {
+        $errorMessage = "Requested to lookup [$Class], but the [$Value] parameter is missing in the template file"
+        $outputContext.AuditLogs.Add([PSCustomObject]@{
+                Message = $errorMessage
+                IsError = $true
+            })
+        return
+    }
+    
+    Write-Verbose "Class [$class]: Variable [$`Value] has value [$($Value)] and endpoint [$($Endpoint)?query=$($SearchAttribute)==$($Value))]"
+
+    # Lookup Value is filled in, lookup value in Topdesk
+    $splatParams = @{
+        Uri     = $baseUrl + $Endpoint + "?query=" + $SearchAttribute + "==" + "'$Value'"
+        Method  = 'GET'
+        Headers = $Headers
+    }
+    $responseGet = Invoke-TopdeskRestMethod @splatParams
+
+    $result = $responseGet | Where-object $SearchAttribute -eq $Value
+
+    # When attribute $Class with $Value is not found in Topdesk
+    if ([string]::IsNullOrEmpty($result.id)) {
+        $errorMessage = "Class [$Class] with SearchAttribute [$SearchAttribute] with value [$Value] isn't found in Topdesk"
+        $outputContext.AuditLogs.Add([PSCustomObject]@{
+                Message = $errorMessage
+                IsError = $true
+            }) 
+    }
+    else {
+        # $id is found in Topdesk, set in Topdesk
+        Write-Output $result.id
+    }
+}
+
+#endregion functions
 
 try {
-
     #region lookuptemplate
     # Setup authentication headers
     $authHeaders = Set-AuthorizationHeaders -UserName $Config.username -ApiKey $Config.apiKey
 
-    # Lookup Topdesk template id
-    $splatParamsTopdeskTemplate = @{
-        Headers = $authHeaders
-        BaseUrl = $config.baseUrl
-        Id      = $template.Template
-    }
-    $templateId = Get-TopdeskTemplateById @splatParamsTopdeskTemplate
-
-    # Add value to  request object
-    $requestObject += @{
-        template = @{
-            id = $templateId
-        }
-    }
-
-    #Validate length of briefDescription
-    $splatParamsValidateBriefDescription = @{
-        Description   = $template.BriefDescription
-        AllowedLength = 80
-        AttributeName = 'BriefDescription'
-    }
-    Confirm-Description @splatParamsValidateBriefDescription
-
-    # Add value to request object
-    $requestObject += @{
-        briefDescription = $template.BriefDescription
-    }
-
-    # Add value to request object
-    $requestObject += @{
-        request = $template.Request1 + $template.Request2 + $template.Request3 + $template.Request4 + $template.Request5
-    }
-
-    # Resolve requester
-    $splatParamsTopdeskRequester = @{
-        Requester            = $template.Requester
-        CorrelationAttribute = $template.RequesterCorrelation
+    # Resolve caller
+    $splatParamsTopdeskCaller = @{
+        Requester            = $template.Caller
+        CorrelationAttribute = $template.CallerCorrelation
         Headers              = $authHeaders
         BaseUrl              = $config.baseUrl
     }
-    $TopdeskPerson = Get-TopdeskPersonByCorrelationAttribute @splatParamsTopdeskRequester
+
+    $TopdeskPerson = Get-TopdeskPersonByCorrelationAttribute @splatParamsTopdeskCaller
 
     # Add value to request object
     $requestObject += @{
-        requester = @{
+        callerLookup = @{
             id = $TopdeskPerson.id
         }
     }
 
-    # Validate change type
-    $splatParamsTopdeskTemplate = @{
-        changeType = $template.ChangeType
+    # Validate length of RequestShort
+    $splatParamsValidateRequestShort = @{
+        Description   = $template.RequestShort
+        AllowedLength = 80
+        AttributeName = 'requestShort'
     }
-    $changeType = Get-TopdeskChangeType @splatParamsTopdeskTemplate
 
+    Confirm-Description @splatParamsValidateRequestShort
+    
     # Add value to request object
     $requestObject += @{
-        changeType = $changeType
+        briefDescription = $template.RequestShort
     }
 
-    ## Support for optional parameters, are only added when they are not empty
-    # Action
+    
+    $splatParamsRequest = @{
+        Description = $template.RequestDescription1 + $template.RequestDescription2 + $template.RequestDescription3 + $template.RequestDescription4 + $template.RequestDescription5
+    }
+    
+    # Add value to request object
+    $requestObject += @{
+        request = Convert-To-HTML-Tag @splatParamsRequest
+    }
+
+
     if (-not [string]::IsNullOrEmpty($template.Action)) {
+        $splatParamsAction = @{
+            Description = $template.Action
+        }
+        
+        # Add value to request object
         $requestObject += @{
-            action = $template.Action
+            action = Convert-To-HTML-Tag @splatParamsAction
         }
     }
 
-    # Category
-    if (-not [string]::IsNullOrEmpty($template.Category)) {
-        $requestObject += @{
-            category = $template.Category
-        }
+    # Resolve branch id
+    $splatParamsBranch = @{
+        BaseUrl         = $config.baseUrl
+        Headers         = $authHeaders
+        Class           = 'Branch'
+        Value           = $template.Branch
+        Endpoint        = '/tas/api/branches'
+        SearchAttribute = 'name'
     }
 
-    # SubCategory
-    if (-not [string]::IsNullOrEmpty($template.SubCategory)) {
-        $requestObject += @{
-            subCategory = $template.SubCategory
-        }
-    }
-
-    # ExternalNumber
-    if (-not [string]::IsNullOrEmpty($template.ExternalNumber)) {
-        $requestObject += @{
-            externalNumber = $template.ExternalNumber
-        }
-    }
-
-    # Impact
-    if (-not [string]::IsNullOrEmpty($template.Impact)) {
-        $requestObject += @{
-            impact = $template.Impact
-        }
-    }
-
-    # Benefit
-    if (-not [string]::IsNullOrEmpty($template.Benefit)) {
-        $requestObject += @{
-            benefit = $template.Benefit
-        }
-    }
-
-    # Priority
-    if (-not [string]::IsNullOrEmpty($template.Priority)) {
-        $requestObject += @{
-            priority = $template.Priority
+    # Add branch to request object
+    $requestObject += @{
+        branch = @{
+            id = Get-TopdeskIdentifier @splatParamsBranch
         }
     }
     
+    # Resolve operatorgroup id
+    if (-not [string]::IsNullOrEmpty($template.OperatorGroup)) {
+        $splatParamsOperatorGroup = @{
+            BaseUrl         = $config.baseUrl
+            Headers         = $authHeaders
+            Class           = 'OperatorGroup'
+            Value           = $template.OperatorGroup
+            Endpoint        = '/tas/api/operatorgroups'
+            SearchAttribute = 'groupName'
+        }
+
+        # Add operatorgroup to request object
+        $requestObject += @{
+            operatorGroup = @{
+                id = Get-TopdeskIdentifier @splatParamsOperatorGroup
+            }
+        }
+    }
+
+    # Resolve operator id 
+    if (-not [string]::IsNullOrEmpty($template.Operator)) {
+        $splatParamsOperator = @{
+            BaseUrl         = $config.baseUrl
+            Headers         = $authHeaders
+            Class           = 'Operator'
+            Value           = $template.Operator
+            Endpoint        = '/tas/api/operators'
+            SearchAttribute = $template.OperatorCorrelation
+        }
+    
+        #Add Impact to request object
+        $requestObject += @{
+            operator = @{
+                id = Get-TopdeskIdentifier @splatParamsOperator
+            }
+        }
+    }
+
+    # Resolve category id
+    if (-not [string]::IsNullOrEmpty($template.Category)) {    
+        $splatParamsCategory = @{
+            BaseUrl         = $config.baseUrl
+            Headers         = $authHeaders
+            Class           = 'Category'
+            Value           = $template.Category
+            Endpoint        = '/tas/api/incidents/categories'
+            SearchAttribute = 'name'
+        }
+
+        # Add category to request object
+        $requestObject += @{
+            category = @{
+                id = Get-TopdeskIdentifier @splatParamsCategory
+            }
+        }
+    }
+
+    # Resolve subCategory id
+    if (-not [string]::IsNullOrEmpty($template.SubCategory)) {   
+        $splatParamsCategory = @{
+            BaseUrl         = $config.baseUrl
+            Headers         = $authHeaders
+            Class           = 'SubCategory'
+            Value           = $template.SubCategory
+            Endpoint        = '/tas/api/incidents/subcategories'
+            SearchAttribute = 'name'
+        }
+
+        # Add subCategory to request object
+        $requestObject += @{
+            subcategory = @{
+                id = Get-TopdeskIdentifier @splatParamsCategory
+            }
+        }
+    }
+
+    # Resolve CallType id
+    if (-not [string]::IsNullOrEmpty($template.CallType)) {
+        $splatParamsCategory = @{
+            BaseUrl         = $config.baseUrl
+            Headers         = $authHeaders
+            Class           = 'CallType'
+            Value           = $template.CallType
+            Endpoint        = '/tas/api/incidents/call_types'
+            SearchAttribute = 'name'
+        }
+
+        # Add CallType to request object
+        $requestObject += @{
+            callType = @{
+                id = Get-TopdeskIdentifier @splatParamsCategory
+            }
+        }
+    }
+
+    # Resolve Impact id 
+    if (-not [string]::IsNullOrEmpty($template.Impact)) {
+        $splatParamsCategory = @{
+            BaseUrl         = $config.baseUrl
+            Headers         = $authHeaders
+            Class           = 'Impact'
+            Value           = $template.Impact
+            Endpoint        = '/tas/api/incidents/impacts'
+            SearchAttribute = 'name'
+        }
+
+        # Add Impact to request object
+        $requestObject += @{
+            impact = @{
+                id = Get-TopdeskIdentifier @splatParamsCategory
+            }
+        }
+    }
+
+    if (-not [string]::IsNullOrEmpty($template.Priority)) {
+        # Resolve priority id 
+        $splatParamsPriority = @{
+            BaseUrl         = $config.baseUrl
+            Headers         = $authHeaders
+            Class           = 'Priority'
+            Value           = $template.Priority
+            Endpoint        = '/tas/api/incidents/priorities'
+            SearchAttribute = 'name'
+        }
+        
+
+        # Add Impact to request object
+        $requestObject += @{
+            priority = @{
+                id = Get-TopdeskIdentifier @splatParamsPriority
+            }
+        }
+    }
+
+    # Resolve entrytype id 
+    if (-not [string]::IsNullOrEmpty($template.EntryType)) {
+        $splatParamsEntryType = @{
+            BaseUrl         = $config.baseUrl
+            Headers         = $authHeaders
+            Class           = 'EntryType'
+            Value           = $template.EntryType
+            Endpoint        = '/tas/api/incidents/entry_types'
+            SearchAttribute = 'name'
+        }
+        
+        # Add Impact to request object
+        $requestObject += @{
+            entryType = @{
+                id = Get-TopdeskIdentifier @splatParamsEntryType
+            }
+        }
+    }
+
+    # Resolve urgency id 
+    if (-not [string]::IsNullOrEmpty($template.Urgency)) {
+        $splatParamsUrgency = @{
+            BaseUrl         = $config.baseUrl
+            Headers         = $authHeaders
+            Class           = 'Urgency'
+            Value           = $template.Urgency
+            Endpoint        = '/tas/api/incidents/urgencies'
+            SearchAttribute = 'name'
+        }
+        
+        # Add Impact to request object
+        $requestObject += @{
+            urgency = @{
+                id = Get-TopdeskIdentifier @splatParamsUrgency
+            }
+        }
+    }
+
+    # Resolve ProcessingStatus id 
+    if (-not [string]::IsNullOrEmpty($template.ProcessingStatus)) {
+        $splatParamsProcessingStatus = @{
+            BaseUrl         = $config.baseUrl
+            Headers         = $authHeaders
+            Class           = 'ProcessingStatus'
+            Value           = $template.ProcessingStatus
+            Endpoint        = '/tas/api/incidents/statuses'
+            SearchAttribute = 'name'
+        }
+        
+        # Add Impact to request object
+        $requestObject += @{
+            processingStatus = @{
+                id = Get-TopdeskIdentifier @splatParamsProcessingStatus
+            }
+        }
+    }
+
     if ($outputContext.AuditLogs.isError -contains $true) {
         Throw "Error(s) occured while looking up required values"
     }
@@ -492,7 +684,7 @@ try {
         Write-Verbose "Sending notification for: [$($personContext.Person.DisplayName)]"
 
         if ($TopdeskPerson.status -eq 'personArchived') {
-            Write-Verbose "Requester [$($TopdeskPerson.id)] will be unarchived"
+            Write-Verbose "Caller [$($TopdeskPerson.id)] will be unarchived"
             $shouldArchive = $true
             $splatParamsPersonUnarchive = @{
                 TopdeskPerson   = [ref]$TopdeskPerson
@@ -505,15 +697,15 @@ try {
         }
 
         # Create change in Topdesk
-        $splatParamsTopdeskChange = @{
-            Headers       = $authHeaders
-            baseUrl       = $config.baseUrl
-            TopdeskChange = $requestObject
+        $splatParamsTopdeskIncident = @{
+            Headers         = $authHeaders
+            baseUrl         = $config.baseUrl
+            TopdeskIncident = $requestObject
         }
-        $TopdeskChange = New-TopdeskChange @splatParamsTopdeskChange
+        $TopdeskChange = New-TopdeskIncident @splatParamsTopdeskIncident
 
         if ($shouldArchive -and $TopdeskPerson.status -ne 'personArchived') {
-            Write-Verbose "Requester $($TopdeskPerson.id) will be archived"
+            Write-Verbose "Caller $($TopdeskPerson.id) will be archived"
             $splatParamsPersonArchive = @{
                 TopdeskPerson   = [ref]$TopdeskPerson
                 Headers         = $authHeaders

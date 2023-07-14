@@ -1,0 +1,191 @@
+[
+    {
+        "key": "CallerCorrelation",
+        "type": "select",
+        "defaultValue": "employeeNumber",
+        "templateOptions": {
+            "label": "Corraltion attribute for resolving the caller in Topdesk",
+            "placeholder": "Please select an option",
+            "options": [
+                {
+                    "value": "employeeNumber",
+                    "label": "employeeNumber"
+                },
+                {
+                    "value": "email",
+                    "label": "email"
+                }
+            ]
+        }
+    },
+    {
+        "key": "Caller",
+        "type": "input",
+        "defaultValue": "{{person.externalid}}",
+        "templateOptions": {
+            "label": "Caller",
+            "required": true,
+            "description": "Fixed value or a variable corresponding to the correlation attribute"
+        }
+    },
+    {
+        "key": "RequestShort",
+        "type": "input",
+        "defaultValue": "Aanvraag Laptop {{person.displayname}}",
+        "templateOptions": {
+            "label": "RequestShort",
+            "description": "Fill in the desired title of the change.",
+            "required": true
+        }
+    },
+    {
+        "key": "RequestDescription1",
+        "type": "textarea",
+        "defaultValue": "Graag een laptop gereed maken voor onderstaande medewerker.\n\nNaam: {{person.Name.NickName}}\nAchternaam: {{person.Name.FamilyName}}\nPersoneelsnummer: {{person.externalid}}\n\nFunctie: {{Person.PrimaryContract.Title.Name}}\nAfdeling: {{Person.PrimaryContract.Department.DisplayName}}\n",
+        "templateOptions": {
+            "label": "RequestDescription1",
+            "description": "You can add your own html tags to the incident. Please read the readme for more information",
+            "required": true,
+            "rows": 15
+        }
+    },
+    {
+        "key": "RequestDescription2",
+        "type": "textarea",
+        "defaultValue": "Part2\n\nDisplayname: {{person.displayname}}",
+        "templateOptions": {
+            "label": "RequestDescription2",
+            "description": "You can add your own html tags to the incident. Please read the readme for more information",
+            "rows": 15
+        }
+    },
+    {
+        "key": "Action",
+        "type": "textarea",
+        "defaultValue": "<strong>Test</strong>\nTest2",
+        "templateOptions": {
+            "label": "Action",
+            "description": "Fill in the action field if needed. If not used fill in null. You can add your own html tags to the incident. Please read the readme for more information",
+            "rows": 5
+        }
+    },
+    {
+        "key": "Branch",
+        "type": "input",
+        "defaultValue": "Baarn",
+        "templateOptions": {
+            "label": "Branch",
+            "description": "Fill in the branch name that is used in Topdesk. This is a mandatory lookup field.",
+            "required": true
+        }
+    },
+    {
+        "key": "OperatorGroup",
+        "type": "input",
+        "defaultValue": "Applicatiebeheerders",
+        "templateOptions": {
+            "label": "OperatorGroup",
+            "description": "Fill in the operator group name that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident."
+        }
+    },
+    {
+        "key": "OperatorCorrelation",
+        "type": "select",
+        "defaultValue": "email",
+        "templateOptions": {
+            "label": "Corraltion attribute for resolving the operator in Topdesk",
+            "placeholder": "Please select an option",
+            "options": [
+                {
+                    "value": "employeeNumber",
+                    "label": "employeeNumber"
+                },
+                {
+                    "value": "email",
+                    "label": "email"
+                }
+            ]
+        }
+    },
+    {
+        "key": "Operator",
+        "type": "input",
+        "defaultValue": "operator@enyoi.org",
+        "templateOptions": {
+            "label": "Operator",
+            "description": "Fill in the operator value corresponding to the correlation attribute. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident."
+        }
+    },
+    {
+        "key": "Category",
+        "type": "input",
+        "defaultValue": "Middelen",
+        "templateOptions": {
+            "label": "Category",
+            "description": "Fill in the category name that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident."
+        }
+    },
+    {
+        "key": "SubCategory",
+        "type": "input",
+        "defaultValue": "Verbruiksgoederen",
+        "templateOptions": {
+            "label": "SubCategory",
+            "description": "Fill in the subcategory name that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident."
+        }
+    },
+    {
+        "key": "CallType",
+        "type": "input",
+        "defaultValue": "Aanvraag",
+        "templateOptions": {
+            "label": "CallType",
+            "description": "Fill in the branch call type that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident."
+        }
+    },
+    {
+        "key": "Impact",
+        "type": "input",
+        "defaultValue": "Organisatie",
+        "templateOptions": {
+            "label": "Impact",
+            "description": "Fill in the impact name that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident."
+        }
+    },
+    {
+        "key": "Priority",
+        "type": "input",
+        "defaultValue": "P1",
+        "templateOptions": {
+            "label": "Priority",
+            "description": "Fill in the priority name that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident."
+        }
+    },
+    {
+        "key": "EntryType",
+        "type": "input",
+        "defaultValue": "Telefonisch",
+        "templateOptions": {
+            "label": "EntryType",
+            "description": "Fill in the entry type name that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident."
+        }
+    },
+    {
+        "key": "Urgency",
+        "type": "input",
+        "defaultValue": "Kan niet werken",
+        "templateOptions": {
+            "label": "Urgency",
+            "description": "Fill in the urgency name that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident."
+        }
+    },
+    {
+        "key": "ProcessingStatus",
+        "type": "input",
+        "defaultValue": "Geregistreerd",
+        "templateOptions": {
+            "label": "ProcessingStatus",
+            "description": "Fill in the processing status name that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident. With the correct processing status, it is possible to create a closed incident."
+        }
+    }
+]

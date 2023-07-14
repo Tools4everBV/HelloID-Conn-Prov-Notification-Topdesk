@@ -34,7 +34,8 @@
         "defaultValue": "Graag een laptop gereed maken voor onderstaande medewerker.\n\nNaam: {{person.Name.NickName}}\nAchternaam: {{person.Name.FamilyName}}\nPersoneelsnummer: {{person.externalid}}\n\nFunctie: {{Person.PrimaryContract.Title.Name}}\nAfdeling: {{Person.PrimaryContract.Department.DisplayName}}\n",
         "templateOptions": {
             "label": "Request1",
-            "required": true
+            "required": true,
+            "rows": 15
         }
     },
     {
@@ -42,7 +43,8 @@
         "type": "textarea",
         "defaultValue": "Part2\n\nDisplayname: {{person.displayname}}",
         "templateOptions": {
-            "label": "Request2"
+            "label": "Request2",
+            "rows": 15
         }
     },
     {
@@ -51,7 +53,8 @@
         "defaultValue": "",
         "templateOptions": {
             "label": "Action",
-            "description": "Commonly filled in the Topdesk change template. If so leave empty."
+            "description": "Commonly filled in the Topdesk change template. If so leave empty.",
+            "rows": 5
         }
     },
     {
