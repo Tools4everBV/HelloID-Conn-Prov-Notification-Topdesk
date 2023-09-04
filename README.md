@@ -24,7 +24,7 @@
     - [Permissions](#permissions)
     - [Templates](#templates)
       - [Changes](#changes)
-    - [Incidents](#incidents)
+      - [Incidents](#incidents)
   - [Getting help](#getting-help)
   - [HelloID docs](#helloid-docs)
 
@@ -124,7 +124,7 @@ The table below describes the different form fields from the template.
 | Benefit                  | The benefit is commonly filled in the Topdesk change template                    |           |
 | Priority                 | The priority is commonly filled in the Topdesk change template                   |           |
 
-### Incidents
+#### Incidents
 To create a form for incidents the following template should be used: [template_incident.json](https://github.com/Tools4everBV/HelloID-Conn-Prov-Notification-Topdesk/blob/main/template_incident.json).
 
 
