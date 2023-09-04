@@ -1,0 +1,146 @@
+[
+    {
+        "key": "scriptFlow",
+        "type": "input",
+        "defaultValue": "Change",
+        "templateOptions": {
+            "label": "Script flow",
+            "disabled": true
+        },
+        "hide": false
+    },
+    {
+        "key": "TopdeskPersonCorrelation",
+        "type": "select",
+        "defaultValue": "employeeNumber",
+        "templateOptions": {
+            "label": "Correlation attribute for resolving the requester in Topdesk",
+            "placeholder": "Please select an option",
+            "options": [
+                {
+                    "value": "employeeNumber",
+                    "label": "employeeNumber"
+                },
+                {
+                    "value": "email",
+                    "label": "email"
+                }
+            ]
+        }
+    },
+    {
+        "key": "TopdeskPerson",
+        "type": "input",
+        "defaultValue": "{{person.externalid}}",
+        "templateOptions": {
+            "label": "Requester",
+            "required": true,
+            "description": "Fixed value or a HelloID variable of the correlation attribute"
+        }
+    },
+    {
+        "key": "Template",
+        "type": "input",
+        "defaultValue": "Ws 006",
+        "templateOptions": {
+            "label": "Template",
+            "description": "Fill in the Topdesk template code of the change. This is mandatory.",
+            "required": true
+        }
+    },
+    {
+        "key": "ChangeType",
+        "type": "select",
+        "defaultValue": "Simple",
+        "templateOptions": {
+            "label": "ChangeType",
+            "description": "Fill in the change type Simple or Extensive.",
+            "placeholder": "Please select an option",
+            "options": [
+                {
+                    "value": "Simple",
+                    "label": "Simple"
+                },
+                {
+                    "value": "Extensive",
+                    "label": "Extensive"
+                }
+            ]
+        }
+    },
+    {
+        "key": "BriefDescription",
+        "type": "input",
+        "defaultValue": "Request for laptop {{person.displayname}}",
+        "templateOptions": {
+            "label": "BriefDescription",
+            "description": "Fill in the desired title of the change.",
+            "required": true
+        }
+    },
+    {
+        "key": "Request",
+        "type": "textarea",
+        "defaultValue": "Please prepare a laptop for the employee below.\n\nName: {{person.Name.NickName}}\nLastname: {{person.Name.FamilyName}}\nExternalID: {{person.externalid}}\n\nTitle: {{Person.PrimaryContract.Title.Name}}\nDepartment: {{Person.PrimaryContract.Department.DisplayName}}\n",
+        "templateOptions": {
+            "label": "Request",
+            "required": true,
+            "rows": 15
+        }
+    },
+    {
+        "key": "Action",
+        "type": "textarea",
+        "defaultValue": "",
+        "templateOptions": {
+            "label": "Action",
+            "description": "",
+            "rows": 5
+        }
+    },
+    {
+        "key": "Category",
+        "type": "input",
+        "defaultValue": "Middelen",
+        "templateOptions": {
+            "label": "Category",
+            "description": "Commonly filled in the Topdesk change template. If so leave empty."
+        }
+    },
+    {
+        "key": "SubCategory",
+        "type": "input",
+        "defaultValue": "Inventaris & apperatuur",
+        "templateOptions": {
+            "label": "SubCategory",
+            "description": "Commonly filled in the Topdesk change template. If so leave empty."
+        }
+    },
+    {
+        "key": "Impact",
+        "type": "input",
+        "defaultValue": "Persoon",
+        "templateOptions": {
+            "label": "Impact",
+            "description": "Commonly filled in the Topdesk change template. If so leave empty."
+        }
+    },
+    {
+        "key": "Benefit",
+        "type": "input",
+        "defaultValue": "",
+        "templateOptions": {
+            "label": "Benefit",
+            "description": "Commonly filled in the Topdesk change template. If so leave empty."
+        }
+    },
+    {
+        "key": "Priority",
+        "type": "input",
+        "defaultValue": "P1",
+        "templateOptions": {
+            "label": "Priority",
+            "description": "Commonly filled in the Topdesk change template. If so leave empty."
+        }
+    }
+]
