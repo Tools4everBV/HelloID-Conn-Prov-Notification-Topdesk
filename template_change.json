@@ -14,7 +14,7 @@
         "type": "select",
         "defaultValue": "employeeNumber",
         "templateOptions": {
-            "label": "Corraltion attribute for resolving the requester in Topdesk",
+            "label": "Correltion attribute for resolving the requester in Topdesk",
             "placeholder": "Please select an option",
             "options": [
                 {

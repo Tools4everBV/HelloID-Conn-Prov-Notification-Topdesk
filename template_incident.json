@@ -14,7 +14,7 @@
         "type": "select",
         "defaultValue": "employeeNumber",
         "templateOptions": {
-            "label": "Corraltion attribute for resolving the caller in Topdesk",
+            "label": "Correltion attribute for resolving the caller in Topdesk",
             "placeholder": "Please select an option",
             "options": [
                 {
@@ -93,7 +93,7 @@
         "type": "select",
         "defaultValue": "email",
         "templateOptions": {
-            "label": "Corraltion attribute for resolving the operator in Topdesk",
+            "label": "Correltion attribute for resolving the operator in Topdesk",
             "placeholder": "Please select an option",
             "options": [
                 {
