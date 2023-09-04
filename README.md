@@ -52,7 +52,31 @@ The following settings are required to connect to the API.
 
 ### Permissions
 
-The API user needs permission to use this connector. See permissions: [HelloID Topdesk target system](https://github.com/Tools4everBV/HelloID-Conn-Prov-Target-Topdesk)
+The following permissions are required to use this connector. This should be configured on a specific Permission Group for the Operator HelloID uses.
+
+| Permission                    | Read | Write | Create | Archive |
+| ----------------------------- | ---- | ----- | ------ | ------- |
+| <b>Call Management</b>        |
+| First line calls              | x    | x     | x      |         |
+| Second line calls             | x    | x     | x      |         |
+| Escalate calls                |      | x     |        |         |
+| Link object to call           |      | x     |        |         |
+| Link room to call             |      | x     |        |         |
+| <b>Change Management</b>      |
+| Requests for Simple Change    | x    | x     | x      |         |
+| Requests for Extensive Change | x    | x     | x      |         |
+| Simple Changes                | x    | x     |        |         |
+| Extensive Changes             | x    | x     |        |         |
+| <b>Supporting Files</b>       |
+| Persons                       | x    | x     |        | x       |
+| Operators                     | x    |       |        |         |
+| Operator groups               | x    |       |        |         |
+| Suppliers                     | x    |       |        |         |
+| Rooms                         | x    |       |        |         |
+| Supporting Files Settings     | x    | x     |        |         |
+| <b>Reporting API</b>          |
+| REST API                      | x    |       |        |         |
+| Use application passwords     |      | x     |        |         |
 
 ### Templates
 
