@@ -164,7 +164,7 @@ The table below describes the different form fields from the template.
 
 > _For more information on how to configure a HelloID PowerShell connector, please refer to our [documentation](https://docs.helloid.com/hc/en-us/articles/360012558020-Configure-a-custom-PowerShell-target-system) pages_
 
-> _If you need help, feel free to ask questions on our [TODOwhenchangingtopublicforumPost](https://forum.helloid.com/forum/helloid-connectors/provisioning/1266-helloid-conn-prov-target-topdesk)_
+> _If you need help, feel free to ask questions on our [forumPost](https://forum.helloid.com/forum/helloid-connectors/provisioning/4937-helloid-conn-prov-notification-topdesk)_
 
 ## HelloID docs
 
