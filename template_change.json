@@ -31,7 +31,7 @@
     {
         "key": "TopdeskPerson",
         "type": "input",
-        "defaultValue": "{{ Person.PrimaryManager.ExternalId || {{ Person.PrimaryManager.ExternalId || yourFixedFallBackRequesterEmployeeNumberBetweenDubbleQuotes }}",
+        "defaultValue": "{{ Person.PrimaryManager.ExternalId || yourFixedFallBackRequesterEmployeeNumberBetweenDubbleQuotes }}",
         "templateOptions": {
             "label": "Requester",
             "required": true,
