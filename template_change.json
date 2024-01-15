@@ -31,11 +31,11 @@
     {
         "key": "TopdeskPerson",
         "type": "input",
-        "defaultValue": "{{person.externalid}}",
+        "defaultValue": "{{ Person.PrimaryManager.ExternalId || yourFixedFallBackRequesterEmployeeNumberBetweenDubbleQuotes }}",
         "templateOptions": {
             "label": "Requester",
             "required": true,
-            "description": "Fixed value or a HelloID variable of the correlation attribute"
+            "description": "Fixed value or a HelloID variable of the correlation attribute. Make sure you configure a 'fallback' when using a notification variable"
         }
     },
     {

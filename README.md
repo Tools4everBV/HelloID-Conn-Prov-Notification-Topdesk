@@ -2,7 +2,7 @@
 
 | :warning: Warning                                                                                                                                                                                                                                 |
 | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Please be aware that the current notifications only can be triggered by built-in events. For other applications please use the Target connector [HelloID Topdesk target system](https://github.com/Tools4everBV/HelloID-Conn-Prov-Target-Topdesk) |
+| Please be aware that the notifications only can be triggered by [events](https://docs.helloid.com/en/provisioning/notifications--provisioning-/notification-events--provisioning-.html). If you need entitlements please use the Target connector [HelloID Topdesk target system](https://github.com/Tools4everBV/HelloID-Conn-Prov-Target-Topdesk) |
 
 
 | :information_source: Information                                                                                                                                                                                                                                                                                                                                                       |
@@ -108,21 +108,21 @@ To create a form for changes the following template should be used: [template_ch
 
 The table below describes the different form fields from the template.
 
-| template key             | Description                                                                      | Mandatory |
-| ------------------------ | -------------------------------------------------------------------------------- | --------- |
-| scriptFlow               | Fixed value of Change (read-only)                                                | Yes       |
-| TopdeskPersonCorrelation | Which Topdesk field is used to correlate the requester (employeeNumber or email) | Yes       |
-| TopdeskPerson            | Fixed value or a HelloID variable of the requester                               | Yes       |
-| Template                 | The code of the template from Topdesk                                            | Yes       |
-| ChangeType               | Type of the change in Topdesk Simple or Extensive                                | Yes       |
-| BriefDescription         | Title of the Topdesk Change                                                      | Yes       |
-| Request                  | Request info that is shown in the Topdesk Change                                 | Yes       |
-| Action                   | Optionally add an action to the Topdesk change                                   |           |
-| Category                 | The category is commonly filled in the Topdesk change template                   |           |
-| SubCategory              | The subcategory is commonly filled in the Topdesk change template                |           |
-| Impact                   | The impact is filled in the Topdesk change template                              |           |
-| Benefit                  | The benefit is commonly filled in the Topdesk change template                    |           |
-| Priority                 | The priority is commonly filled in the Topdesk change template                   |           |
+| template key             | Description                                                                                                                 | Mandatory |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------- | --------- |
+| scriptFlow               | Fixed value of Change (read-only)                                                                                           | Yes       |
+| TopdeskPersonCorrelation | Which Topdesk field is used to correlate the requester (employeeNumber or email)                                            | Yes       |
+| TopdeskPerson            | Fixed value or a HelloID variable of the requester. Make sure you configure a 'fallback' when using a notification variable | Yes       |
+| Template                 | The code of the template from Topdesk                                                                                       | Yes       |
+| ChangeType               | Type of the change in Topdesk Simple or Extensive                                                                           | Yes       |
+| BriefDescription         | Title of the Topdesk Change                                                                                                 | Yes       |
+| Request                  | Request info that is shown in the Topdesk Change                                                                            | Yes       |
+| Action                   | Optionally add an action to the Topdesk change                                                                              |           |
+| Category                 | The category is commonly filled in the Topdesk change template                                                              |           |
+| SubCategory              | The subcategory is commonly filled in the Topdesk change template                                                           |           |
+| Impact                   | The impact is filled in the Topdesk change template                                                                         |           |
+| Benefit                  | The benefit is commonly filled in the Topdesk change template                                                               |           |
+| Priority                 | The priority is commonly filled in the Topdesk change template                                                              |           |
 
 #### Incidents
 To create a form for incidents the following template should be used: [template_incident.json](https://github.com/Tools4everBV/HelloID-Conn-Prov-Notification-Topdesk/blob/main/template_incident.json).
@@ -135,26 +135,26 @@ To create a form for incidents the following template should be used: [template_
 
 The table below describes the different form fields from the template.
 
-| Key                      | Description                                                                     | Mandatory |
-| ------------------------ | ------------------------------------------------------------------------------- | --------- |
-| scriptFlow               | Fixed value of Incident                                                         | Yes       |
-| TopdeskPersonCorrelation | Which Topdesk field is used to correlate the caller (employeeNumber or email)   | Yes       |
-| TopdeskPerson            | Fixed value or a HelloID variable of the caller                                 | Yes       |
-| RequestShort             | Title of the Topdesk Incident                                                   | Yes       |
-| RequestDescription       | Request info that is shown in the Topdesk Incident. HTML tags supported         | Yes       |
-| Action                   | Optionally add an action to the Topdesk. HTML tags supported                    |           |
-| Branch                   | Fill in a existing branch                                                       | Yes       |
-| OperatorGroup            | Operator group name that will be assigned to the incident                       |           |
-| OperatorCorrelation      | Which Topdesk field is used to correlate the operator (employeeNumber or email) |           |
-| Operator                 | Operator that will be assigned to the incident                                  |           |
-| Category                 | Fill in the category name that is used in Topdesk                               |           |
-| SubCategory              | Fill in the subcategory name that is used in Topdesk                            |           |
-| CallType                 | Fill in the branch call type that is used in Topdesk                            |           |
-| Impact                   | Fill in the impact name that is used in Topdesk                                 |           |
-| Priority                 | Fill in the priority name that is used in Topdesk                               |           |
-| EntryType                | Fill in the entry type name that is used in Topdesk                             |           |
-| Urgency                  | Fill in the urgency name that is used in Topdesk                                |           |
-| ProcessingStatus         | Fill in the processing status name that is used in Topdesk                      |           |
+| Key                      | Description                                                                                                              | Mandatory |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------ | --------- |
+| scriptFlow               | Fixed value of Incident                                                                                                  | Yes       |
+| TopdeskPersonCorrelation | Which Topdesk field is used to correlate the caller (employeeNumber or email)                                            | Yes       |
+| TopdeskPerson            | Fixed value or a HelloID variable of the caller. Make sure you configure a 'fallback' when using a notification variable | Yes       |
+| RequestShort             | Title of the Topdesk Incident                                                                                            | Yes       |
+| RequestDescription       | Request info that is shown in the Topdesk Incident. HTML tags supported                                                  | Yes       |
+| Action                   | Optionally add an action to the Topdesk. HTML tags supported                                                             |           |
+| Branch                   | Fill in a existing branch                                                                                                | Yes       |
+| OperatorGroup            | Operator group name that will be assigned to the incident                                                                |           |
+| OperatorCorrelation      | Which Topdesk field is used to correlate the operator (employeeNumber or email)                                          |           |
+| Operator                 | Operator that will be assigned to the incident                                                                           |           |
+| Category                 | Fill in the category name that is used in Topdesk                                                                        |           |
+| SubCategory              | Fill in the subcategory name that is used in Topdesk                                                                     |           |
+| CallType                 | Fill in the branch call type that is used in Topdesk                                                                     |           |
+| Impact                   | Fill in the impact name that is used in Topdesk                                                                          |           |
+| Priority                 | Fill in the priority name that is used in Topdesk                                                                        |           |
+| EntryType                | Fill in the entry type name that is used in Topdesk                                                                      |           |
+| Urgency                  | Fill in the urgency name that is used in Topdesk                                                                         |           |
+| ProcessingStatus         | Fill in the processing status name that is used in Topdesk                                                               |           |
 
 | :information_source: Information                                                                                                         |
 | :--------------------------------------------------------------------------------------------------------------------------------------- |
@@ -164,7 +164,7 @@ The table below describes the different form fields from the template.
 
 > _For more information on how to configure a HelloID PowerShell connector, please refer to our [documentation](https://docs.helloid.com/hc/en-us/articles/360012558020-Configure-a-custom-PowerShell-target-system) pages_
 
-> _If you need help, feel free to ask questions on our [TODOwhenchangingtopublicforumPost](https://forum.helloid.com/forum/helloid-connectors/provisioning/1266-helloid-conn-prov-target-topdesk)_
+> _If you need help, feel free to ask questions on our [forumPost](https://forum.helloid.com/forum/helloid-connectors/provisioning/4937-helloid-conn-prov-notification-topdesk)_
 
 ## HelloID docs
 

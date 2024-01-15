@@ -1,7 +1,7 @@
 #####################################################
 # HelloID-Conn-Prov-Notification-Topdesk
 #
-# Version: 1.0.0
+# Version: 1.0.1
 #####################################################
 
 # Initialize default values
@@ -143,12 +143,12 @@ function Confirm-Description {
         $AllowedLength
     )
     if ($Description.Length -gt $AllowedLength) {
-        $errorMessage = "Could not send notification. The attribute [$AttributeName] exceeds the max amount of [$AllowedLength] characters. Please shorten the value for this attribute in the JSON file. Value: [$Description]"
-        
-        $outputContext.AuditLogs.Add([PSCustomObject]@{
-                Message = $errorMessage
-                IsError = $true
-            })
+        Write-Verbose "The attribute [$AttributeName] exceeds the max amount of [$AllowedLength] characters [$Description]. The attribute will be shortened"
+        $descriptionShortened = $Description.substring(0, [System.Math]::Min($AllowedLength, $Description.Length))
+        return $descriptionShortened
+    }
+    else {
+        return $Description
     }
 }
 
@@ -494,18 +494,16 @@ try {
             }
         }
 
-        # Validate length of RequestShort
+        # Validate length of RequestShort, RequestShort will be shortened if the length is exceeded
         $splatParamsValidateRequestShort = @{
             Description   = $actionContext.TemplateConfiguration.RequestShort
             AllowedLength = 80
             AttributeName = 'requestShort'
         }
-
-        Confirm-Description @splatParamsValidateRequestShort
-    
+  
         # Add value to request object
         $requestObject += @{
-            briefDescription = $actionContext.TemplateConfiguration.RequestShort
+            briefDescription = Confirm-Description @splatParamsValidateRequestShort
         }
 
     
@@ -767,17 +765,16 @@ try {
             }
         }
     
-        #Validate length of briefDescription
+        #Validate length of briefDescription, briefDescription will be shortened if the length is exceeded
         $splatParamsValidateBriefDescription = @{
             Description   = $actionContext.TemplateConfiguration.BriefDescription
             AllowedLength = 80
             AttributeName = 'BriefDescription'
         }
-        Confirm-Description @splatParamsValidateBriefDescription
     
         # Add value to request object
         $requestObject += @{
-            briefDescription = $actionContext.TemplateConfiguration.BriefDescription
+            briefDescription = Confirm-Description @splatParamsValidateBriefDescription
         }
     
         # Add value to request object
