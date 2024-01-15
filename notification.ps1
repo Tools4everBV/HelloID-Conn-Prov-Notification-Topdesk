@@ -143,9 +143,9 @@ function Confirm-Description {
         $AllowedLength
     )
     if ($Description.Length -gt $AllowedLength) {
-        Write-Verbose "The attribute [$AttributeName] exceeds the max amount of [$AllowedLength] characters [$Description]. The attribute will be shorten"
-        $descriptionShorten = $Description.substring(0, [System.Math]::Min($AllowedLength, $Description.Length))
-        return $descriptionShorten
+        Write-Verbose "The attribute [$AttributeName] exceeds the max amount of [$AllowedLength] characters [$Description]. The attribute will be shortend"
+        $descriptionShortend = $Description.substring(0, [System.Math]::Min($AllowedLength, $Description.Length))
+        return $descriptionShortend
     }
     else {
         return $Description
@@ -494,7 +494,7 @@ try {
             }
         }
 
-        # Validate length of RequestShort, RequestShort will be shorten if the length is exceeded
+        # Validate length of RequestShort, RequestShort will be shortend if the length is exceeded
         $splatParamsValidateRequestShort = @{
             Description   = $actionContext.TemplateConfiguration.RequestShort
             AllowedLength = 80
@@ -765,7 +765,7 @@ try {
             }
         }
     
-        #Validate length of briefDescription, briefDescription will be shorten if the length is exceeded
+        #Validate length of briefDescription, briefDescription will be shortend if the length is exceeded
         $splatParamsValidateBriefDescription = @{
             Description   = $actionContext.TemplateConfiguration.BriefDescription
             AllowedLength = 80
