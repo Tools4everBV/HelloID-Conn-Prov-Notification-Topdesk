@@ -1,7 +1,7 @@
 #####################################################
 # HelloID-Conn-Prov-Notification-Topdesk
 #
-# Version: 1.0.1
+# Version: 1.1.0
 #####################################################
 
 # Initialize default values
@@ -73,7 +73,7 @@ function Invoke-TopdeskRestMethod {
                 Method      = $Method
                 ContentType = $ContentType
             }
-  
+
             if ($Body) {
                 $splatParams['Body'] = [Text.Encoding]::UTF8.GetBytes($Body)
             }
@@ -85,6 +85,7 @@ function Invoke-TopdeskRestMethod {
         }
     }
 }
+
 function Get-TopdeskTemplateById {
     [CmdletBinding()]
     param (
@@ -120,7 +121,7 @@ function Get-TopdeskTemplateById {
             })
         return
     }
-
+    
     Write-Output $topdeskTemplate.id
 }
 
@@ -466,6 +467,146 @@ function New-TopdeskChange {
 
     Write-Output $change
 }
+
+function Get-VariablesFromString {
+    param(
+        [string]
+        $string
+    )
+    $regex = [regex]'\$\((.*?)\)'
+    $variables = [System.Collections.Generic.list[object]]::new()
+
+    $match = $regex.Match($string)
+    while ($match.Success) {
+        $variables.Add($match.Value)
+        $match = $match.NextMatch()
+    }
+
+    Write-Output $variables
+}
+
+function Resolve-Variables {
+    param(
+        [ref]
+        $String,
+
+        $VariablesToResolve
+    )
+    foreach ($var in $VariablesToResolve | Select-Object -Unique) {
+        ## Must be changed When changing the the way of lookup variables.
+        $varTrimmed = $var.trim('$(').trim(')')
+        $Properties = $varTrimmed.Split('.')
+
+        $curObject = (Get-Variable ($Properties | Select-Object -First 1)  -ErrorAction SilentlyContinue).Value
+        $Properties | Select-Object -Skip 1 | ForEach-Object {
+            if ($_ -ne $Properties[-1]) {
+                $curObject = $curObject.$_
+            }
+            elseif ($null -ne $curObject.$_) {
+                $String.Value = $String.Value.Replace($var, $curObject.$_)
+            }
+            else {
+                Write-Verbose  "Variable [$var] not found"
+                $String.Value = $String.Value.Replace($var, $curObject.$_) # Add to override unresolved variables with null
+            }
+        }
+    }
+}
+
+function Format-Description {
+    param (
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $Description
+    )
+    try {
+        $variablesFound = Get-VariablesFromString -String $Description
+        Resolve-Variables -String ([ref]$Description) -VariablesToResolve $variablesFound
+
+        Write-Output $Description
+    }
+    catch {
+        Throw $_
+    }
+}
+
+function Get-TopdeskAssetsByPersonId {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $BaseUrl,
+
+        [Parameter(Mandatory)]
+        [System.Collections.IDictionary]
+        $Headers,
+
+        [Parameter(Mandatory)]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $PersonId,
+
+        [Parameter()]
+        $Filter
+    )
+
+    # Check if the correlationAttribute is not empty
+    if ([string]::IsNullOrEmpty($PersonId)) {
+        $errorMessage = "The person ID [$PersonId] is empty. This is likely a scripting issue."
+        $outputContext.AuditLogs.Add([PSCustomObject]@{
+                Message = $errorMessage
+                IsError = $true
+            })
+        return
+    }
+
+    if ($filter) {
+        foreach ($item in $Filter) {
+            # Lookup value is filled in, lookup value in Topdesk
+            $splatParams = @{
+                Uri     = "$baseUrl/tas/api/assetmgmt/assets?archived='false'&templateName=$item&linkedTo=person/$PersonId"
+                Method  = 'GET'
+                Headers = $Headers
+            }
+
+            $responseGet = Invoke-TopdeskRestMethod @splatParams
+
+            # Check if no results are returned
+            if ($responseGet.dataSet.Count -gt 0) {
+                # records found, filter out archived assets and return
+                foreach ($asset in $responseGet.dataSet) {
+                    $assetList += "- $($asset.text)`n" # for incidents `n (line break) is automatically converted to <br>
+                }
+            }
+        }   
+    }
+    else {
+        # Lookup value is filled in, lookup value in Topdesk
+        $splatParams = @{
+            Uri     = "$baseUrl/tas/api/assetmgmt/assets?archived='false'&linkedTo=person/$PersonId"
+            Method  = 'GET'
+            Headers = $Headers
+        }
+
+        $responseGet = Invoke-TopdeskRestMethod @splatParams
+
+        # Check if no results are returned
+        if ($responseGet.dataSet.Count -gt 0) {
+            # records found, filter out archived assets and return
+            foreach ($asset in $responseGet.dataSet) {
+                $assetList += "- $($asset.text)`n" # for incidents `n (line break) is automatically converted to <br>
+            }
+              
+        }
+    }
+    if ([string]::IsNullOrEmpty($assetList)) {
+        # no results found
+        $defaultMessage = $actionContext.Configuration.messageNoAssetsFound
+        $assetList = "- $defaultMessage`n"
+    }
+    write-output $assetList
+}
 #endregion functions
 
 try {
@@ -473,6 +614,7 @@ try {
     # Setup authentication headers
     $authHeaders = Set-AuthorizationHeaders -UserName $actionContext.Configuration.username -ApiKey $actionContext.Configuration.apiKey
 
+    #requester
     $splatParamsTopdesk = @{
         Requester            = $actionContext.TemplateConfiguration.TopdeskPerson
         CorrelationAttribute = $actionContext.TemplateConfiguration.TopdeskPersonCorrelation
@@ -482,6 +624,37 @@ try {
 
     $TopdeskPerson = Get-TopdeskPersonByCorrelationAttribute @splatParamsTopdesk
 
+    # Lookup Assets of person   
+    if ($actionContext.Configuration.enableGetAssets) {
+        if ($TopdeskPerson.employeeNumber -eq $personContext.Person.ExternalId) {
+            $TopdeskPersonForAssets = $TopdeskPerson
+        }
+        else {
+            $splatParamsTopdeskEmployee = @{
+                Requester            = $personContext.Person.ExternalId
+                CorrelationAttribute = 'employeeNumber'
+                Headers              = $authHeaders
+                BaseUrl              = $actionContext.Configuration.baseUrl
+            }
+
+            $TopdeskPersonForAssets = Get-TopdeskPersonByCorrelationAttribute @splatParamsTopdeskEmployee
+        }
+    
+        if (-not[string]::IsNullOrEmpty($($TopdeskPersonForAssets.Id))) {
+            # get assets of employee
+            $splatParamsTopdeskAssets = @{
+                PersonId = $TopdeskPersonForAssets.Id
+                Headers  = $authHeaders
+                BaseUrl  = $actionContext.Configuration.baseUrl
+                Filter   = $($actionContext.Configuration.assetsFilter).Split("`n") #TemplateName, case sensitive
+            }
+
+            # Use $($account.TopdeskAssets) in your notification configuration to resolve the queried assets
+            $account = @{
+                TopdeskAssets = Get-TopdeskAssetsByPersonId @splatParamsTopdeskAssets
+            }
+        }
+    }
     #endregion lookup global
 
     #region look incident
@@ -496,11 +669,11 @@ try {
 
         # Validate length of RequestShort, RequestShort will be shortened if the length is exceeded
         $splatParamsValidateRequestShort = @{
-            Description   = $actionContext.TemplateConfiguration.RequestShort
+            Description   = Format-Description $actionContext.TemplateConfiguration.RequestShort
             AllowedLength = 80
             AttributeName = 'requestShort'
         }
-  
+
         # Add value to request object
         $requestObject += @{
             briefDescription = Confirm-Description @splatParamsValidateRequestShort
@@ -508,7 +681,7 @@ try {
 
     
         $splatParamsRequest = @{
-            Description = $actionContext.TemplateConfiguration.RequestDescription
+            Description = Format-Description $actionContext.TemplateConfiguration.RequestDescription
         }
     
         # Add value to request object
@@ -519,7 +692,7 @@ try {
 
         if (-not [string]::IsNullOrEmpty($actionContext.TemplateConfiguration.Action)) {
             $splatParamsAction = @{
-                Description = $actionContext.TemplateConfiguration.Action
+                Description = Format-Description $actionContext.TemplateConfiguration.Action
             }
         
             # Add value to request object
@@ -744,14 +917,14 @@ try {
 
     #region look change
     elseif ($actionContext.TemplateConfiguration.scriptFlow -eq 'Change') {
-         
+        
         # Add Topdeskperson id to request object
         $requestObject += @{
             requester = @{
                 id = $TopdeskPerson.id
             }
         }
-       
+        #region lookuptemplate
         # Lookup Topdesk template id
         $splatParamsTopdeskTemplate = @{
             Headers = $authHeaders
@@ -767,7 +940,7 @@ try {
     
         #Validate length of briefDescription, briefDescription will be shortened if the length is exceeded
         $splatParamsValidateBriefDescription = @{
-            Description   = $actionContext.TemplateConfiguration.BriefDescription
+            Description   = Format-Description $actionContext.TemplateConfiguration.BriefDescription
             AllowedLength = 80
             AttributeName = 'BriefDescription'
         }
@@ -779,7 +952,7 @@ try {
     
         # Add value to request object
         $requestObject += @{
-            request = $actionContext.TemplateConfiguration.Request
+            request = Format-Description $actionContext.TemplateConfiguration.Request
         }
     
         # Validate change type
@@ -793,7 +966,7 @@ try {
             changeType = $changeType
         }
     
-        ## Support for optional parameters, are only added when they are not empty
+        # Support for optional parameters, are only added when they are not empty
         # Action
         if (-not [string]::IsNullOrEmpty($actionContext.TemplateConfiguration.Action)) {
             $requestObject += @{
@@ -916,8 +1089,9 @@ try {
             })
         Write-Verbose ($requestObject | ConvertTo-Json)
     }
+    #endregion write
 }
-#endregion write
+    
 catch {
     $ex = $PSItem
     
@@ -948,7 +1122,6 @@ catch {
     }
     # End
 }
-
 finally {
     # Check if auditLogs contains errors, if no errors are found, set success to true
     if (-NOT($outputContext.AuditLogs.isError -contains $true)) {
@@ -956,4 +1129,3 @@ finally {
     }
     $outputContext.Success = $success
 }
-

@@ -1,16 +1,15 @@
 # HelloID-Conn-Prov-Notification-Topdesk
 
-| :warning: Warning                                                                                                                                                                                                                                 |
-| :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Please be aware that the notifications only can be triggered by [events](https://docs.helloid.com/en/provisioning/notifications--provisioning-/notification-events--provisioning-.html). If you need entitlements please use the Target connector [HelloID Topdesk target system](https://github.com/Tools4everBV/HelloID-Conn-Prov-Target-Topdesk) |
+> [!IMPORTANT]
+> Please be aware that the notifications only can be triggered by [events](https://docs.helloid.com/en/provisioning/notifications--provisioning-/notification-events--provisioning-.html). If you need entitlements please use the Target connector [HelloID Topdesk target system](https://github.com/Tools4everBV/HelloID-Conn-Prov-Target-Topdesk)
 
 
-| :information_source: Information                                                                                                                                                                                                                                                                                                                                                       |
-| :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| This repository contains the connector and configuration code only. The implementer is responsible to acquire the connection details such as username, password, certificate, etc. You might even need to sign a contract or agreement with the supplier before implementing this connector. Please contact the client's application manager to coordinate the connector requirements. |
+> [!IMPORTANT]
+> This repository contains the connector and configuration code only. The implementer is responsible to acquire the connection details such as username, password, certificate, etc. You might even need to sign a contract or agreement with the supplier before implementing this connector. Please contact the client's application manager to coordinate the connector requirements.
+
 <br />
 <p align="center"> 
-  <img src="https://www.tools4ever.nl/connector-logos/topdesk-logo.png">
+  <img src="https://github.com/Tools4everBV/HelloID-Conn-Prov-Notification-Topdesk/blob/main/Logo.png?raw=true">
 </p>
 
 ## Table of contents
@@ -25,6 +24,7 @@
     - [Templates](#templates)
       - [Changes](#changes)
       - [Incidents](#incidents)
+    - [Query assets](#query-assets)
   - [Getting help](#getting-help)
   - [HelloID docs](#helloid-docs)
 
@@ -42,49 +42,62 @@ _HelloID-Conn-Prov-Notification-Topdesk_ is a _notifcation_ connector. Topdesk p
 
 The following settings are required to connect to the API.
 
-| Setting              | Description                                               | Mandatory |
-| -------------------- | --------------------------------------------------------- | --------- |
-| BaseUrl              | The URL to the API                                        | Yes       |
-| UserName             | The UserName to connect to the API                        | Yes       |
-| Password             | The Password to connect to the API                        | Yes       |
-| Archiving reason     | Fill in an archiving reason that is configured in Topdesk | Yes       |
-| Toggle debug logging | Creates extra logging for debug purposes                  | Yes       |
+| Setting                        | Description                                                                                    | Mandatory |
+| ------------------------------ | ---------------------------------------------------------------------------------------------- | --------- |
+| BaseUrl                        | The URL to the API                                                                             | Yes       |
+| UserName                       | The UserName to connect to the API                                                             | Yes       |
+| Password                       | The Password to connect to the API                                                             | Yes       |
+| Archiving reason               | Fill in an archiving reason that is configured in Topdesk                                      | Yes       |
+| Toggle query linked assets     | Enable if you want to add a list of linked assets in your change or incident                   |           |
+| Message no linked assets found | Message shown when no linked asset is found                                                    | Yes       |
+| Filter queried assets          | The type of assets that need to be queried. Leave empty if you want to query all linked assets |           |
+| Toggle debug logging           | Creates extra logging for debug purposes                                                       |           |
 
 ### Permissions
 
 The following permissions are required to use this connector. This should be configured on a specific Permission Group for the Operator HelloID uses.
 
-| Permission                    | Read | Write | Create | Archive |
-| ----------------------------- | ---- | ----- | ------ | ------- |
-| <b>Call Management</b>        |
-| First line calls              | x    | x     | x      |         |
-| Second line calls             | x    | x     | x      |         |
-| Escalate calls                |      | x     |        |         |
-| Link object to call           |      | x     |        |         |
-| Link room to call             |      | x     |        |         |
-| <b>Change Management</b>      |
-| Requests for Simple Change    | x    | x     | x      |         |
-| Requests for Extensive Change | x    | x     | x      |         |
-| Simple Changes                | x    | x     |        |         |
-| Extensive Changes             | x    | x     |        |         |
-| <b>Supporting Files</b>       |
-| Persons                       | x    | x     |        | x       |
-| Operators                     | x    |       |        |         |
-| Operator groups               | x    |       |        |         |
-| Suppliers                     | x    |       |        |         |
-| Rooms                         | x    |       |        |         |
-| Supporting Files Settings     | x    | x     |        |         |
-| <b>Reporting API</b>          |
-| REST API                      | x    |       |        |         |
-| Use application passwords     |      | x     |        |         |
+| Permission                       | Read | Write | Create | Archive |
+| -------------------------------- | ---- | ----- | ------ | ------- |
+| <b>Call Management</b>           |
+| First line calls                 | x    | x     | x      |         |
+| Second line calls                | x    | x     | x      |         |
+| Escalate calls                   |      | x     |        |         |
+| Link object to call              |      | x     |        |         |
+| Link room to call                |      | x     |        |         |
+| <b>Change Management</b>         |
+| Requests for Simple Change       | x    | x     | x      |         |
+| Requests for Extensive Change    | x    | x     | x      |         |
+| Simple Changes                   | x    | x     |        |         |
+| Extensive Changes                | x    | x     |        |         |
+| <b>Supporting Files</b>          |
+| Persons                          | x    | x     |        | x       |
+| Operators                        | x    |       |        |         |
+| Operator groups                  | x    |       |        |         |
+| Suppliers                        | x    |       |        |         |
+| Rooms                            | x    |       |        |         |
+| Supporting Files Settings        | x    | x     |        |         |
+| <b>Reporting API</b>             |
+| REST API                         | x    |       |        |         |
+| Use application passwords        |      | x     |        |         |
+| <b>Asset Management - Assets</b> |
+| Configuration                    | x    |       |        |         |
+| Firsttemplate                    | x    |       |        |         |
+| Hardware                         | x    |       |        |         |
+| Inventories                      | x    |       |        |         |
+| Licentie                         | x    |       |        |         |
+| Network component                | x    |       |        |         |
+| Software                         | x    |       |        |         |
+| Stock                            | x    |       |        |         |
+| Telephone systems                | x    |       |        |         |
+
 
 ### Templates
 
 There are two different templates. One for changes and one for incidents. They can be mixed when configured in Topdesk.
-| :warning: Warning                                                                                                                           |
-| :------------------------------------------------------------------------------------------------------------------------------------------ |
-|                                                                                                                                             |
-| Please keep in mind that the key form field names in the templates are used in the notification.ps1 changing them will break the connector. |
+
+> [!IMPORTANT]
+> Please keep in mind that the key form field names in the templates are used in the notification.ps1 changing them will break the connector.
 
 It is possible to hide or disable (make them read-only) certain form fields if they are not used or should not be changed. For example, the branch should always be 'Baarn' and the field must be hidden in the configuration:
 
@@ -128,10 +141,8 @@ The table below describes the different form fields from the template.
 To create a form for incidents the following template should be used: [template_incident.json](https://github.com/Tools4everBV/HelloID-Conn-Prov-Notification-Topdesk/blob/main/template_incident.json).
 
 
-| :information_source: Information                                                                                                                                                                                                                                                                                                                                                                                                       |
-| :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| The Topdesk incident API uses HTML tags. For example by using the tags <'strong'><'/strong'>. By default, we convert all "enter" (\n) to <'br'>, so you can just use the 'enter' button when filling in the Request Description and Action of the incident. For more information about the HTML tags: [Topdesk incident API documentation](https://developers.topdesk.com/documentation/index-apidoc.html#api-Incident-CreateIncident) |
-
+> [!NOTE]
+> The Topdesk incident API uses HTML tags. For example by using the tags <'strong'><'/strong'>. By default, we convert all "enter" (\n) to <'br'>, so you can just use the 'enter' button when filling in the Request Description and Action of the incident. For more information about the HTML tags: [Topdesk incident API documentation](https://developers.topdesk.com/documentation/index-apidoc.html#api-Incident-CreateIncident)
 
 The table below describes the different form fields from the template.
 
@@ -156,9 +167,27 @@ The table below describes the different form fields from the template.
 | Urgency                  | Fill in the urgency name that is used in Topdesk                                                                         |           |
 | ProcessingStatus         | Fill in the processing status name that is used in Topdesk                                                               |           |
 
-| :information_source: Information                                                                                                         |
-| :--------------------------------------------------------------------------------------------------------------------------------------- |
-| Some fields in Topdesk are marked mandatory in the Topdesk configuration. These fields are default not marked mandatory in the template. |
+> [!NOTE]
+>
+| Some fields in Topdesk are marked mandatory in the Topdesk configuration. These fields are default not marked mandatory in the template.
+
+### Query assets
+In the configuration there is a option to enable query assets. When this is enabled you can add a list of assigned assets of the person to the change or incident.
+
+To add the list of assets the `$($account.TopdeskAssets)` variable needs to be used. For example:
+
+
+```
+Assets:
+$($account.TopdeskAssets)
+```
+
+> [!TIP]
+> If only certain assets needs to be queried you can add a list of asset types. Each type needs to be on a separate line in the configuration. Also note the assets types are case sensitive. Leave empty if you want to query all assets. For example:
+> ```
+> Hardware
+> Software
+> ```
 
 ## Getting help
 
