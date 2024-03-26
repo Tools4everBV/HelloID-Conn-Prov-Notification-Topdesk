@@ -168,8 +168,7 @@ The table below describes the different form fields from the template.
 | ProcessingStatus         | Fill in the processing status name that is used in Topdesk                                                               |           |
 
 > [!NOTE]
->
-| Some fields in Topdesk are marked mandatory in the Topdesk configuration. These fields are default not marked mandatory in the template.
+> Some fields in Topdesk are marked mandatory in the Topdesk configuration. These fields are default not marked mandatory in the template.
 
 ### Query assets
 In the configuration there is a option to enable query assets. When this is enabled you can add a list of assigned assets of the person to the change or incident.
