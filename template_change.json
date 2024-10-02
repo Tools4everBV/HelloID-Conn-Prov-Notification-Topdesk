@@ -81,7 +81,7 @@
     {
         "key": "Request",
         "type": "textarea",
-        "defaultValue": "Please prepare a laptop for the employee below.\n\nName: {{person.Name.NickName}}\nLastname: {{person.Name.FamilyName}}\nExternalID: {{person.externalid}}\n\nTitle: {{Person.PrimaryContract.Title.Name}}\nDepartment: {{Person.PrimaryContract.Department.DisplayName}}\n",
+        "defaultValue": "Please prepare a laptop for the employee below.\n\nName: {{person.Name.NickName}}\nLastname: {{person.Name.FamilyName}}\nExternalID: {{person.externalid}}\n\nTitle: {{Person.PrimaryContract.Title.Name}}\nDepartment: {{Person.PrimaryContract.Department.DisplayName}}\n\nAssets:\n$($account.TopdeskAssets)",
         "templateOptions": {
             "label": "Request",
             "required": true,
@@ -141,6 +141,27 @@
         "templateOptions": {
             "label": "Priority",
             "description": "Commonly filled in the Topdesk change template. If so leave empty."
+        }
+    },
+    {
+        "key": "enableGetAssets",
+        "type": "checkbox",
+        "defaultValue": false,
+        "templateOptions": {
+            "label": "Query linked assets",
+            "description": "Use $($account.TopdeskAssets) in your notification configuration to resolve the queried assets. The employee number of the Topdesk person needs to be equal to the HelloID externalID.",
+            "required": false
+        }
+    },
+    {
+        "key": "assetsFilter",
+        "type": "textarea",
+        "defaultValue": "Hardware\nSoftware",
+        "templateOptions": {
+            "label": "The type of assets that need to be queried",
+            "description": "Be aware to enter only a single filter on each line and that the filters are case sensitive. Leave empty if you want to query all assets",
+            "required": false,
+            "rows": 5
         }
     }
 ]

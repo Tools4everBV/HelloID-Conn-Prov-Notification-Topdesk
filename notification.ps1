@@ -1,11 +1,8 @@
 #####################################################
 # HelloID-Conn-Prov-Notification-Topdesk
 #
-# Version: 1.1.0
+# Version: 1.2.0
 #####################################################
-
-# Initialize default values
-$success = $false
 
 # Enable TLS1.2
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor [System.Net.SecurityProtocolType]::Tls12
@@ -625,7 +622,7 @@ try {
     $TopdeskPerson = Get-TopdeskPersonByCorrelationAttribute @splatParamsTopdesk
 
     # Lookup Assets of person   
-    if ($actionContext.Configuration.enableGetAssets) {
+    if ($actionContext.TemplateConfiguration.enableGetAssets) {
         if ($TopdeskPerson.employeeNumber -eq $personContext.Person.ExternalId) {
             $TopdeskPersonForAssets = $TopdeskPerson
         }
@@ -646,7 +643,7 @@ try {
                 PersonId = $TopdeskPersonForAssets.Id
                 Headers  = $authHeaders
                 BaseUrl  = $actionContext.Configuration.baseUrl
-                Filter   = $($actionContext.Configuration.assetsFilter).Split("`n") #TemplateName, case sensitive
+                Filter   = $($actionContext.TemplateConfiguration.assetsFilter).Split("`n") #TemplateName, case sensitive
             }
 
             # Use $($account.TopdeskAssets) in your notification configuration to resolve the queried assets
@@ -656,6 +653,8 @@ try {
         }
     }
     #endregion lookup global
+
+    Write-Verbose "Scriptflow [$($actionContext.TemplateConfiguration.scriptFlow)]"
 
     #region look incident
     if ($actionContext.TemplateConfiguration.scriptFlow -eq 'Incident') {
@@ -1125,7 +1124,6 @@ catch {
 finally {
     # Check if auditLogs contains errors, if no errors are found, set success to true
     if (-NOT($outputContext.AuditLogs.isError -contains $true)) {
-        $success = $true
+        $outputContext.Success = $true
     }
-    $outputContext.Success = $success
 }
