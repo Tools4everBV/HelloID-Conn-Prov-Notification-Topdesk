@@ -48,9 +48,7 @@ The following settings are required to connect to the API.
 | UserName                       | The UserName to connect to the API                                                             | Yes       |
 | Password                       | The Password to connect to the API                                                             | Yes       |
 | Archiving reason               | Fill in an archiving reason that is configured in Topdesk                                      | Yes       |
-| Toggle query linked assets     | Enable if you want to add a list of linked assets in your change or incident                   |           |
 | Message no linked assets found | Message shown when no linked asset is found                                                    | Yes       |
-| Filter queried assets          | The type of assets that need to be queried. Leave empty if you want to query all linked assets |           |
 | Toggle debug logging           | Creates extra logging for debug purposes                                                       |           |
 
 ### Permissions
@@ -136,6 +134,8 @@ The table below describes the different form fields from the template.
 | Impact                   | The impact is filled in the Topdesk change template                                                                         |           |
 | Benefit                  | The benefit is commonly filled in the Topdesk change template                                                               |           |
 | Priority                 | The priority is commonly filled in the Topdesk change template                                                              |           |
+| EnableGetAssets          | Enable this checkbox if you want to query the assets that are linked to the person                                          |           |
+| AssetsFilter             | The type of assets that need to be queried. Leave empty if you want to query all assets                                     |           |
 
 #### Incidents
 To create a form for incidents the following template should be used: [template_incident.json](https://github.com/Tools4everBV/HelloID-Conn-Prov-Notification-Topdesk/blob/main/template_incident.json).
@@ -166,6 +166,8 @@ The table below describes the different form fields from the template.
 | EntryType                | Fill in the entry type name that is used in Topdesk                                                                      |           |
 | Urgency                  | Fill in the urgency name that is used in Topdesk                                                                         |           |
 | ProcessingStatus         | Fill in the processing status name that is used in Topdesk                                                               |           |
+| EnableGetAssets          | Enable this checkbox if you want to query the assets that are linked to the person                                       |           |
+| AssetsFilter             | The type of assets that need to be queried. Leave empty if you want to query all assets                                  |           |
 
 > [!NOTE]
 > Some fields in Topdesk are marked mandatory in the Topdesk configuration. These fields are default not marked mandatory in the template.
