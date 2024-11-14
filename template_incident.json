@@ -199,6 +199,16 @@
         }
     },
     {
+        "key": "skipNoAssetsFound",
+        "type": "checkbox",
+        "defaultValue": false,
+        "templateOptions": {
+            "label": "Skip when no asset is found",
+            "description": "Skip making a incident when no asset is found on the Topdesk person.",
+            "required": false
+        }
+    },
+    {
         "key": "assetsFilter",
         "type": "textarea",
         "defaultValue": "Hardware\nSoftware",

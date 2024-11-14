@@ -42,14 +42,14 @@ _HelloID-Conn-Prov-Notification-Topdesk_ is a _notifcation_ connector. Topdesk p
 
 The following settings are required to connect to the API.
 
-| Setting                        | Description                                                                                    | Mandatory |
-| ------------------------------ | ---------------------------------------------------------------------------------------------- | --------- |
-| BaseUrl                        | The URL to the API                                                                             | Yes       |
-| UserName                       | The UserName to connect to the API                                                             | Yes       |
-| Password                       | The Password to connect to the API                                                             | Yes       |
-| Archiving reason               | Fill in an archiving reason that is configured in Topdesk                                      | Yes       |
-| Message no linked assets found | Message shown when no linked asset is found                                                    | Yes       |
-| Toggle debug logging           | Creates extra logging for debug purposes                                                       |           |
+| Setting                        | Description                                               | Mandatory |
+| ------------------------------ | --------------------------------------------------------- | --------- |
+| BaseUrl                        | The URL to the API                                        | Yes       |
+| UserName                       | The UserName to connect to the API                        | Yes       |
+| Password                       | The Password to connect to the API                        | Yes       |
+| Archiving reason               | Fill in an archiving reason that is configured in Topdesk | Yes       |
+| Message no linked assets found | Message shown when no linked asset is found               | Yes       |
+| Toggle debug logging           | Creates extra logging for debug purposes                  |           |
 
 ### Permissions
 
@@ -134,8 +134,9 @@ The table below describes the different form fields from the template.
 | Impact                   | The impact is filled in the Topdesk change template                                                                         |           |
 | Benefit                  | The benefit is commonly filled in the Topdesk change template                                                               |           |
 | Priority                 | The priority is commonly filled in the Topdesk change template                                                              |           |
-| EnableGetAssets          | Enable this checkbox if you want to query the assets that are linked to the person                                          |           |
-| AssetsFilter             | The type of assets that need to be queried. Leave empty if you want to query all assets                                     |           |
+| EnableGetAssets          | Enable this checkbox for querying the assets that are linked to the person                                                  |           |
+| SkipNoAssetsFound        | Enable this checkbox if creating a change is only required when one or multiple assets are found                            |           |
+| AssetsFilter             | The type of assets that need to be queried. Leave empty if querying all assets is required                                  |           |
 
 #### Incidents
 To create a form for incidents the following template should be used: [template_incident.json](https://github.com/Tools4everBV/HelloID-Conn-Prov-Notification-Topdesk/blob/main/template_incident.json).
@@ -166,8 +167,9 @@ The table below describes the different form fields from the template.
 | EntryType                | Fill in the entry type name that is used in Topdesk                                                                      |           |
 | Urgency                  | Fill in the urgency name that is used in Topdesk                                                                         |           |
 | ProcessingStatus         | Fill in the processing status name that is used in Topdesk                                                               |           |
-| EnableGetAssets          | Enable this checkbox if you want to query the assets that are linked to the person                                       |           |
-| AssetsFilter             | The type of assets that need to be queried. Leave empty if you want to query all assets                                  |           |
+| EnableGetAssets          | Enable this checkbox for querying the assets that are linked to the person                                               |           |
+| SkipNoAssetsFound        | Enable this checkbox if creating a incident is only required when one or multiple assets are found                       |           |
+| AssetsFilter             | The type of assets that need to be queried. Leave empty if querying all assets is required                               |           |
 
 > [!NOTE]
 > Some fields in Topdesk are marked mandatory in the Topdesk configuration. These fields are default not marked mandatory in the template.
