@@ -41,33 +41,13 @@
     }
   },
   {
-    "key": "enableGetAssets",
-    "type": "checkbox",
-    "defaultValue": false,
-    "templateOptions": {
-      "label": "Query linked assets",
-      "description": "Use $($account.TopdeskAssets) in your notification configuration to resolve the queried assets. The employee number of the Topdesk person needs to be equal to the HelloID externalID.",
-      "required": false
-    }
-  },
-  {
     "key": "messageNoAssetsFound",
     "type": "input",
     "defaultValue": "No assets linked to this person",
     "templateOptions": {
       "label": "Message is shown when a person has no linked assets",
+      "description": "Enabling querying assets can be done after selecting the notification template",
       "required": true
-    }
-  },
-  {
-    "key": "assetsFilter",
-    "type": "textarea",
-    "defaultValue": "Hardware\nSoftware",
-    "templateOptions": {
-      "label": "The type of assets that need to be queried",
-      "description": "Be aware to enter only a single filter on each line and that the filters are case sensitive. Leave empty if you want to query all assets",
-      "required": false,
-      "rows": 5
     }
   },
   {

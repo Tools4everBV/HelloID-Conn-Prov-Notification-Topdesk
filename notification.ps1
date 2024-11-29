@@ -1,11 +1,8 @@
 #####################################################
 # HelloID-Conn-Prov-Notification-Topdesk
 #
-# Version: 1.1.0
+# Version: 1.2.0
 #####################################################
-
-# Initialize default values
-$success = $false
 
 # Enable TLS1.2
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor [System.Net.SecurityProtocolType]::Tls12
@@ -14,6 +11,10 @@ $success = $false
 switch ($($actionContext.Configuration.IsDebug)) {
     $true { $VerbosePreference = 'Continue' }
     $false { $VerbosePreference = 'SilentlyContinue' }
+}
+
+$account = @{
+    TopdeskAssets = "'Query linked assets' checkbox is disabled" # Default message shown when using $account.TopdeskAssets
 }
 
 #region functions
@@ -548,7 +549,12 @@ function Get-TopdeskAssetsByPersonId {
         $PersonId,
 
         [Parameter()]
-        $Filter
+        [Array]
+        $AssetFilter,
+        
+        [Parameter()]
+        [Boolean]
+        $SkipNoAssets
     )
 
     # Check if the correlationAttribute is not empty
@@ -561,8 +567,8 @@ function Get-TopdeskAssetsByPersonId {
         return
     }
 
-    if ($filter) {
-        foreach ($item in $Filter) {
+    if ($AssetFilter) {
+        foreach ($item in $AssetFilter) {
             # Lookup value is filled in, lookup value in Topdesk
             $splatParams = @{
                 Uri     = "$baseUrl/tas/api/assetmgmt/assets?archived='false'&templateName=$item&linkedTo=person/$PersonId"
@@ -600,10 +606,17 @@ function Get-TopdeskAssetsByPersonId {
               
         }
     }
+
     if ([string]::IsNullOrEmpty($assetList)) {
-        # no results found
-        $defaultMessage = $actionContext.Configuration.messageNoAssetsFound
-        $assetList = "- $defaultMessage`n"
+        if ($SkipNoAssets) {
+            Write-Verbose 'Action skipped because no assets are found and [SkipNoAssetsFound = true] is configured'
+            return
+        }
+        else {
+            # no results found
+            $defaultMessage = $actionContext.Configuration.messageNoAssetsFound
+            $assetList = "- $defaultMessage`n" # for incidents `n (line break) is automatically converted to <br>
+        }
     }
     write-output $assetList
 }
@@ -625,7 +638,7 @@ try {
     $TopdeskPerson = Get-TopdeskPersonByCorrelationAttribute @splatParamsTopdesk
 
     # Lookup Assets of person   
-    if ($actionContext.Configuration.enableGetAssets) {
+    if ($actionContext.TemplateConfiguration.enableGetAssets) {
         if ($TopdeskPerson.employeeNumber -eq $personContext.Person.ExternalId) {
             $TopdeskPersonForAssets = $TopdeskPerson
         }
@@ -643,19 +656,25 @@ try {
         if (-not[string]::IsNullOrEmpty($($TopdeskPersonForAssets.Id))) {
             # get assets of employee
             $splatParamsTopdeskAssets = @{
-                PersonId = $TopdeskPersonForAssets.Id
-                Headers  = $authHeaders
-                BaseUrl  = $actionContext.Configuration.baseUrl
-                Filter   = $($actionContext.Configuration.assetsFilter).Split("`n") #TemplateName, case sensitive
+                PersonId     = $TopdeskPersonForAssets.Id
+                Headers      = $authHeaders
+                BaseUrl      = $actionContext.Configuration.baseUrl
+                AssetFilter  = $($actionContext.TemplateConfiguration.assetsFilter).Split("`n") #TemplateName, case sensitive
+                SkipNoAssets = [boolean]$actionContext.TemplateConfiguration.skipNoAssetsFound
             }
 
             # Use $($account.TopdeskAssets) in your notification configuration to resolve the queried assets
-            $account = @{
-                TopdeskAssets = Get-TopdeskAssetsByPersonId @splatParamsTopdeskAssets
+            $account.TopdeskAssets = Get-TopdeskAssetsByPersonId @splatParamsTopdeskAssets
+
+            # TopdeskAssets can only be empty if the action needs to be skiped [SkipNoAssetsFound = true]
+            if ([string]::IsNullOrEmpty($account.TopdeskAssets)) {
+                throw 'Action skip'
             }
         }
     }
     #endregion lookup global
+
+    Write-Verbose "Scriptflow [$($actionContext.TemplateConfiguration.scriptFlow)]"
 
     #region look incident
     if ($actionContext.TemplateConfiguration.scriptFlow -eq 'Incident') {
@@ -1104,6 +1123,14 @@ catch {
         'Error(s) occured while looking up required values' {
             # Only log when there are no lookup values, as these generate their own audit message
         }
+
+        'Action skip' {
+            # If empty and [SkipNoAssetsFound = true] in the JSON, nothing should be done. Mark them as a success
+            $outputContext.AuditLogs.Add([PSCustomObject]@{
+                    Message = 'Not creating TOPdesk notification, because no assets are found and [Skip when no asset is found] checkbox is enabled'
+                    IsError = $false
+                })
+        }
         
         default {
             Write-Verbose ($ex | ConvertTo-Json) # Debug - Test
@@ -1125,7 +1152,6 @@ catch {
 finally {
     # Check if auditLogs contains errors, if no errors are found, set success to true
     if (-NOT($outputContext.AuditLogs.isError -contains $true)) {
-        $success = $true
+        $outputContext.Success = $true
     }
-    $outputContext.Success = $success
 }
