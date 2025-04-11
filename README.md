@@ -170,6 +170,7 @@ The table below describes the different form fields from the template.
 | EnableGetAssets          | Enable this checkbox for querying the assets that are linked to the person                                               |           |
 | SkipNoAssetsFound        | Enable this checkbox if creating a incident is only required when one or multiple assets are found                       |           |
 | AssetsFilter             | The type of assets that need to be queried. Leave empty if querying all assets is required                               |           |
+| status                   | Fill in the status of the incident example: firstLine or secondLine                                                      |           |
 
 > [!NOTE]
 > Some fields in Topdesk are marked mandatory in the Topdesk configuration. These fields are default not marked mandatory in the template.

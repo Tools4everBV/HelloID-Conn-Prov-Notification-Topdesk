@@ -89,6 +89,15 @@
         }
     },
     {
+        "key": "Status",
+        "type": "input",
+        "defaultValue": "secondLine",
+        "templateOptions": {
+          "label": "Status",
+          "description": "Fill in the status of the incident. firstline or secondline."
+        }
+      },
+    {
         "key": "OperatorCorrelation",
         "type": "select",
         "defaultValue": "email",
