@@ -719,6 +719,12 @@ try {
                 action = Convert-To-HTML-Tag @splatParamsAction
             }
         }
+        # Add value to request opject firstLine or secondLine
+        if (-not [string]::IsNullOrEmpty($actionContext.TemplateConfiguration.Status)) {
+            $requestObject += @{
+                  status = $actionContext.TemplateConfiguration.Status
+              }
+          }
 
         # Resolve branch id
         $splatParamsBranch = @{
