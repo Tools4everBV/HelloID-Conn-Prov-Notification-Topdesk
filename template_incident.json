@@ -31,11 +31,11 @@
     {
         "key": "TopdeskPerson",
         "type": "input",
-        "defaultValue": "{{ Person.PrimaryManager.ExternalId || yourFixedFallBackRequesterEmployeeNumberBetweenDubbleQuotes }}",
+        "defaultValue": "{{ Person.PrimaryManager.ExternalId || \"yourFixedFallBackRequesterEmployeeNumber\" }}",
         "templateOptions": {
             "label": "Caller",
             "required": true,
-            "description": "Fixed value or a variable corresponding to the correlation attribute. Make sure you configure a 'fallback' when using a notification variable"
+            "description": "Fixed value or a HelloID variable of the correlation attribute. Make sure you configure a 'fallback' when using a notification variable.\n Example: {{ Person.PrimaryManager.ExternalId || \"123456789\"  }}"
         }
     },
     {
@@ -93,10 +93,10 @@
         "type": "input",
         "defaultValue": "secondLine",
         "templateOptions": {
-          "label": "Status",
-          "description": "Fill in the status of the incident. firstline or secondline."
+            "label": "Status",
+            "description": "Fill in the status of the incident. firstline or secondline."
         }
-      },
+    },
     {
         "key": "OperatorCorrelation",
         "type": "select",
