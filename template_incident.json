@@ -75,8 +75,8 @@
         "defaultValue": "Baarn",
         "templateOptions": {
             "label": "Branch",
-            "description": "Fill in the branch name that is used in Topdesk. This is a mandatory lookup field.",
-            "required": true
+            "description": "Fill in the branch name that is used in Topdesk. This is a mandatory lookup field. If not provided, the branch in the incident will be automatically populated based on the requester.",
+            "required": false
         }
     },
     {
