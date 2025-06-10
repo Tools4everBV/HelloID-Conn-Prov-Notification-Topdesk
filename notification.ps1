@@ -727,22 +727,24 @@ try {
           }
 
         # Resolve branch id
-        $splatParamsBranch = @{
-            BaseUrl         = $actionContext.Configuration.baseUrl
-            Headers         = $authHeaders
-            Class           = 'Branch'
-            Value           = $actionContext.TemplateConfiguration.Branch
-            Endpoint        = '/tas/api/branches'
-            SearchAttribute = 'name'
-        }
+        if (-not [string]::IsNullOrEmpty($actionContext.TemplateConfiguration.Branch)) {
+            $splatParamsBranch = @{
+                BaseUrl         = $actionContext.Configuration.baseUrl
+                Headers         = $authHeaders
+                Class           = 'Branch'
+                Value           = $actionContext.TemplateConfiguration.Branch
+                Endpoint        = '/tas/api/branches'
+                SearchAttribute = 'name'
+            }
 
-        # Add branch to request object
-        $requestObject += @{
-            branch = @{
-                id = Get-TopdeskIdentifier @splatParamsBranch
+            # Add branch to request object
+            $requestObject += @{
+                branch = @{
+                    id = Get-TopdeskIdentifier @splatParamsBranch
+                }
             }
         }
-    
+        
         # Resolve operatorgroup id
         if (-not [string]::IsNullOrEmpty($actionContext.TemplateConfiguration.OperatorGroup)) {
             $splatParamsOperatorGroup = @{

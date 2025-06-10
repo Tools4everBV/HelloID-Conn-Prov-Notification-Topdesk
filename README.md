@@ -147,30 +147,30 @@ To create a form for incidents the following template should be used: [template_
 
 The table below describes the different form fields from the template.
 
-| Key                      | Description                                                                                                              | Mandatory |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------ | --------- |
-| scriptFlow               | Fixed value of Incident                                                                                                  | Yes       |
-| TopdeskPersonCorrelation | Which Topdesk field is used to correlate the caller (employeeNumber or email)                                            | Yes       |
-| TopdeskPerson            | Fixed value or a HelloID variable of the caller. Make sure you configure a 'fallback' when using a notification variable | Yes       |
-| RequestShort             | Title of the Topdesk Incident                                                                                            | Yes       |
-| RequestDescription       | Request info that is shown in the Topdesk Incident. HTML tags supported                                                  | Yes       |
-| Action                   | Optionally add an action to the Topdesk. HTML tags supported                                                             |           |
-| Branch                   | Fill in a existing branch                                                                                                | Yes       |
-| OperatorGroup            | Operator group name that will be assigned to the incident                                                                |           |
-| OperatorCorrelation      | Which Topdesk field is used to correlate the operator (employeeNumber or email)                                          |           |
-| Operator                 | Operator that will be assigned to the incident                                                                           |           |
-| Category                 | Fill in the category name that is used in Topdesk                                                                        |           |
-| SubCategory              | Fill in the subcategory name that is used in Topdesk                                                                     |           |
-| CallType                 | Fill in the branch call type that is used in Topdesk                                                                     |           |
-| Impact                   | Fill in the impact name that is used in Topdesk                                                                          |           |
-| Priority                 | Fill in the priority name that is used in Topdesk                                                                        |           |
-| EntryType                | Fill in the entry type name that is used in Topdesk                                                                      |           |
-| Urgency                  | Fill in the urgency name that is used in Topdesk                                                                         |           |
-| ProcessingStatus         | Fill in the processing status name that is used in Topdesk                                                               |           |
-| EnableGetAssets          | Enable this checkbox for querying the assets that are linked to the person                                               |           |
-| SkipNoAssetsFound        | Enable this checkbox if creating a incident is only required when one or multiple assets are found                       |           |
-| AssetsFilter             | The type of assets that need to be queried. Leave empty if querying all assets is required                               |           |
-| status                   | Fill in the status of the incident example: firstLine or secondLine                                                      |           |
+| Key                      | Description                                                                                                                    | Mandatory |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------ | --------- |
+| scriptFlow               | Fixed value of Incident                                                                                                        | Yes       |
+| TopdeskPersonCorrelation | Which Topdesk field is used to correlate the caller (employeeNumber or email)                                                  | Yes       |
+| TopdeskPerson            | Fixed value or a HelloID variable of the caller. Make sure you configure a 'fallback' when using a notification variable       | Yes       |
+| RequestShort             | Title of the Topdesk Incident                                                                                                  | Yes       |
+| RequestDescription       | Request info that is shown in the Topdesk Incident. HTML tags supported                                                        | Yes       |
+| Action                   | Optionally add an action to the Topdesk. HTML tags supported                                                                   |           |
+| Branch                   | Fill in a existing branch. If not provided, the branch in the incident will be automatically populated based on the requester. |           |
+| OperatorGroup            | Operator group name that will be assigned to the incident                                                                      |           |
+| OperatorCorrelation      | Which Topdesk field is used to correlate the operator (employeeNumber or email)                                                |           |
+| Operator                 | Operator that will be assigned to the incident                                                                                 |           |
+| Category                 | Fill in the category name that is used in Topdesk                                                                              |           |
+| SubCategory              | Fill in the subcategory name that is used in Topdesk                                                                           |           |
+| CallType                 | Fill in the branch call type that is used in Topdesk                                                                           |           |
+| Impact                   | Fill in the impact name that is used in Topdesk                                                                                |           |
+| Priority                 | Fill in the priority name that is used in Topdesk                                                                              |           |
+| EntryType                | Fill in the entry type name that is used in Topdesk                                                                            |           |
+| Urgency                  | Fill in the urgency name that is used in Topdesk                                                                               |           |
+| ProcessingStatus         | Fill in the processing status name that is used in Topdesk                                                                     |           |
+| EnableGetAssets          | Enable this checkbox for querying the assets that are linked to the person                                                     |           |
+| SkipNoAssetsFound        | Enable this checkbox if creating a incident is only required when one or multiple assets are found                             |           |
+| AssetsFilter             | The type of assets that need to be queried. Leave empty if querying all assets is required                                     |           |
+| status                   | Fill in the status of the incident example: firstLine or secondLine                                                            |           |
 
 > [!NOTE]
 > Some fields in Topdesk are marked mandatory in the Topdesk configuration. These fields are default not marked mandatory in the template.
