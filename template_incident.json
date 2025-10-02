@@ -218,16 +218,6 @@
     "type": "checkbox"
   },
   {
-    "defaultValue": false,
-    "key": "ShowDifferences",
-    "templateOptions": {
-      "description": "Enable the differences when accounts are updated.",
-      "label": "Show differences",
-      "required": false
-    },
-    "type": "checkbox"
-  },
-  {
     "defaultValue": "Hardware\nSoftware",
     "key": "assetsFilter",
     "templateOptions": {
@@ -237,5 +227,15 @@
       "rows": 5
     },
     "type": "textarea"
+  },
+    {
+    "defaultValue": false,
+    "key": "ShowDifferences",
+    "templateOptions": {
+      "description": "Enable the differences when accounts are updated.",
+      "label": "Show differences",
+      "required": false
+    },
+    "type": "checkbox"
   }
 ]
