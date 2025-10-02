@@ -18,6 +18,27 @@ $account = @{
 }
 
 #region functions
+function get-Incident-Differences {
+    $differences = '<br>&nbsp;<br><strong style="font-size : 1.5 em">Difference</strong><br>'
+    foreach($difference in $actionContext.Differences){
+        $differences += "<strong>$($difference.property)</strong> from '<i>$($difference.oldValue)</i>' to '<i>$($difference.newValue)</i>'<br><br>"
+    }
+    return $differences
+}
+
+function get-Change-Differences {
+    $differences = '
+    
+Difference 
+'
+    foreach($difference in $actionContext.Differences){
+        $differences += "$($difference.property) from '$($difference.oldValue)' to '$($difference.newValue)'
+        
+        "
+    }
+    return $differences
+}
+
 function Set-AuthorizationHeaders {
     [CmdletBinding()]
     param (
@@ -150,7 +171,9 @@ function Confirm-Description {
         return $descriptionShortened
     }
     else {
+
         return $Description
+
     }
 }
 
@@ -165,6 +188,7 @@ function Convert-To-HTML-Tag {
     $Description = $Description | ConvertTo-Json
     $Description = $Description.Replace('\n', '<br>')
     $Description = $Description | ConvertFrom-Json
+    
     Write-Output $Description
 }
 
@@ -698,9 +722,17 @@ try {
             briefDescription = Confirm-Description @splatParamsValidateRequestShort
         }
 
-    
+        # Add differences
+        if($actionContext.TemplateConfiguration.ShowDifferences){
+            $differences = get-Incident-Differences
+            $Description = "$(Format-Description $actionContext.TemplateConfiguration.RequestDescription) $differences"
+        }else{
+            $Description = Format-Description $actionContext.TemplateConfiguration.RequestDescription
+        }
+
         $splatParamsRequest = @{
-            Description = Format-Description $actionContext.TemplateConfiguration.RequestDescription
+
+            Description = $Description
         }
     
         # Add value to request object
@@ -976,10 +1008,18 @@ try {
         $requestObject += @{
             briefDescription = Confirm-Description @splatParamsValidateBriefDescription
         }
-    
+
+        # Add differences
+        if($actionContext.TemplateConfiguration.ShowDifferences){
+            $differences = get-Change-Differences
+            $Description = "$(Format-Description $actionContext.TemplateConfiguration.Request) $differences"
+        }else{
+            $Description = Format-Description $actionContext.TemplateConfiguration.Request
+        }
+
         # Add value to request object
         $requestObject += @{
-            request = Format-Description $actionContext.TemplateConfiguration.Request
+            request = $Description
         }
     
         # Validate change type
