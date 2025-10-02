@@ -1,177 +1,187 @@
 [
-    {
-        "key": "scriptFlow",
-        "type": "input",
-        "defaultValue": "Change",
-        "templateOptions": {
-            "label": "Script flow",
-            "disabled": true
+  {
+    "defaultValue": "Change",
+    "hide": false,
+    "key": "scriptFlow",
+    "templateOptions": {
+      "disabled": true,
+      "label": "Script flow"
+    },
+    "type": "input"
+  },
+  {
+    "defaultValue": "employeeNumber",
+    "key": "TopdeskPersonCorrelation",
+    "templateOptions": {
+      "label": "Correlation attribute for resolving the requester in Topdesk",
+      "options": [
+        {
+          "label": "employeeNumber",
+          "value": "employeeNumber"
         },
-        "hide": false
-    },
-    {
-        "key": "TopdeskPersonCorrelation",
-        "type": "select",
-        "defaultValue": "employeeNumber",
-        "templateOptions": {
-            "label": "Correlation attribute for resolving the requester in Topdesk",
-            "placeholder": "Please select an option",
-            "options": [
-                {
-                    "value": "employeeNumber",
-                    "label": "employeeNumber"
-                },
-                {
-                    "value": "email",
-                    "label": "email"
-                }
-            ]
+        {
+          "label": "email",
+          "value": "email"
         }
+      ],
+      "placeholder": "Please select an option"
     },
-    {
-        "key": "TopdeskPerson",
-        "type": "input",
-        "defaultValue": "{{ Person.PrimaryManager.ExternalId || \"yourFixedFallBackRequesterEmployeeNumber\" }}",
-        "templateOptions": {
-            "label": "Requester",
-            "required": true,
-            "description": "Fixed value or a HelloID variable of the correlation attribute. Make sure you configure a 'fallback' when using a notification variable.\n Example: {{ Person.PrimaryManager.ExternalId || \"123456789\"  }}"
-        }
+    "type": "select"
+  },
+  {
+    "defaultValue": "{{ Person.PrimaryManager.ExternalId || \"yourFixedFallBackRequesterEmployeeNumber\" }}",
+    "key": "TopdeskPerson",
+    "templateOptions": {
+      "description": "Fixed value or a HelloID variable of the correlation attribute. Make sure you configure a 'fallback' when using a notification variable.\n Example: {{ Person.PrimaryManager.ExternalId || \"123456789\"  }}",
+      "label": "Requester",
+      "required": true
     },
-    {
-        "key": "Template",
-        "type": "input",
-        "defaultValue": "Ws 006",
-        "templateOptions": {
-            "label": "Template",
-            "description": "Fill in the Topdesk template code of the change. This is mandatory.",
-            "required": true
-        }
+    "type": "input"
+  },
+  {
+    "defaultValue": "Ws 006",
+    "key": "Template",
+    "templateOptions": {
+      "description": "Fill in the Topdesk template code of the change. This is mandatory.",
+      "label": "Template",
+      "required": true
     },
-    {
-        "key": "ChangeType",
-        "type": "select",
-        "defaultValue": "Simple",
-        "templateOptions": {
-            "label": "ChangeType",
-            "description": "Fill in the change type Simple or Extensive.",
-            "placeholder": "Please select an option",
-            "options": [
-                {
-                    "value": "Simple",
-                    "label": "Simple"
-                },
-                {
-                    "value": "Extensive",
-                    "label": "Extensive"
-                }
-            ]
+    "type": "input"
+  },
+  {
+    "defaultValue": "Simple",
+    "key": "ChangeType",
+    "templateOptions": {
+      "description": "Fill in the change type Simple or Extensive.",
+      "label": "ChangeType",
+      "options": [
+        {
+          "label": "Simple",
+          "value": "Simple"
+        },
+        {
+          "label": "Extensive",
+          "value": "Extensive"
         }
+      ],
+      "placeholder": "Please select an option"
     },
-    {
-        "key": "BriefDescription",
-        "type": "input",
-        "defaultValue": "Request for laptop {{person.displayname}}",
-        "templateOptions": {
-            "label": "BriefDescription",
-            "description": "Fill in the desired title of the change.",
-            "required": true
-        }
+    "type": "select"
+  },
+  {
+    "defaultValue": "Request for laptop {{person.displayname}}",
+    "key": "BriefDescription",
+    "templateOptions": {
+      "description": "Fill in the desired title of the change.",
+      "label": "BriefDescription",
+      "required": true
     },
-    {
-        "key": "Request",
-        "type": "textarea",
-        "defaultValue": "Please prepare a laptop for the employee below.\n\nName: {{person.Name.NickName}}\nLastname: {{person.Name.FamilyName}}\nExternalID: {{person.externalid}}\n\nTitle: {{Person.PrimaryContract.Title.Name}}\nDepartment: {{Person.PrimaryContract.Department.DisplayName}}\n\nAssets:\n$($account.TopdeskAssets)",
-        "templateOptions": {
-            "label": "Request",
-            "required": true,
-            "rows": 15
-        }
+    "type": "input"
+  },
+  {
+    "defaultValue": "Please prepare a laptop for the employee below.\n\nName: {{person.Name.NickName}}\nLastname: {{person.Name.FamilyName}}\nExternalID: {{person.externalid}}\n\nTitle: {{Person.PrimaryContract.Title.Name}}\nDepartment: {{Person.PrimaryContract.Department.DisplayName}}\n\nAssets:\n$($account.TopdeskAssets)",
+    "key": "Request",
+    "templateOptions": {
+      "label": "Request",
+      "required": true,
+      "rows": 15
     },
-    {
-        "key": "Action",
-        "type": "textarea",
-        "defaultValue": "",
-        "templateOptions": {
-            "label": "Action",
-            "description": "",
-            "rows": 5
-        }
+    "type": "textarea"
+  },
+  {
+    "defaultValue": "",
+    "key": "Action",
+    "templateOptions": {
+      "description": "",
+      "label": "Action",
+      "rows": 5
     },
-    {
-        "key": "Category",
-        "type": "input",
-        "defaultValue": "Middelen",
-        "templateOptions": {
-            "label": "Category",
-            "description": "Commonly filled in the Topdesk change template. If so leave empty."
-        }
+    "type": "textarea"
+  },
+  {
+    "defaultValue": "Middelen",
+    "key": "Category",
+    "templateOptions": {
+      "description": "Commonly filled in the Topdesk change template. If so leave empty.",
+      "label": "Category"
     },
-    {
-        "key": "SubCategory",
-        "type": "input",
-        "defaultValue": "Inventaris & apperatuur",
-        "templateOptions": {
-            "label": "SubCategory",
-            "description": "Commonly filled in the Topdesk change template. If so leave empty."
-        }
+    "type": "input"
+  },
+  {
+    "defaultValue": "Inventaris & apperatuur",
+    "key": "SubCategory",
+    "templateOptions": {
+      "description": "Commonly filled in the Topdesk change template. If so leave empty.",
+      "label": "SubCategory"
     },
-    {
-        "key": "Impact",
-        "type": "input",
-        "defaultValue": "Persoon",
-        "templateOptions": {
-            "label": "Impact",
-            "description": "Commonly filled in the Topdesk change template. If so leave empty."
-        }
+    "type": "input"
+  },
+  {
+    "defaultValue": "Persoon",
+    "key": "Impact",
+    "templateOptions": {
+      "description": "Commonly filled in the Topdesk change template. If so leave empty.",
+      "label": "Impact"
     },
-    {
-        "key": "Benefit",
-        "type": "input",
-        "defaultValue": "",
-        "templateOptions": {
-            "label": "Benefit",
-            "description": "Commonly filled in the Topdesk change template. If so leave empty."
-        }
+    "type": "input"
+  },
+  {
+    "defaultValue": "",
+    "key": "Benefit",
+    "templateOptions": {
+      "description": "Commonly filled in the Topdesk change template. If so leave empty.",
+      "label": "Benefit"
     },
-    {
-        "key": "Priority",
-        "type": "input",
-        "defaultValue": "P1",
-        "templateOptions": {
-            "label": "Priority",
-            "description": "Commonly filled in the Topdesk change template. If so leave empty."
-        }
+    "type": "input"
+  },
+  {
+    "defaultValue": "P1",
+    "key": "Priority",
+    "templateOptions": {
+      "description": "Commonly filled in the Topdesk change template. If so leave empty.",
+      "label": "Priority"
     },
-    {
-        "key": "enableGetAssets",
-        "type": "checkbox",
-        "defaultValue": false,
-        "templateOptions": {
-            "label": "Query linked assets",
-            "description": "Use $($account.TopdeskAssets) in your notification configuration to resolve the queried assets. The employee number of the Topdesk person needs to be equal to the HelloID externalID.",
-            "required": false
-        }
+    "type": "input"
+  },
+  {
+    "defaultValue": false,
+    "key": "enableGetAssets",
+    "templateOptions": {
+      "description": "Use $($account.TopdeskAssets) in your notification configuration to resolve the queried assets. The employee number of the Topdesk person needs to be equal to the HelloID externalID.",
+      "label": "Query linked assets",
+      "required": false
     },
-    {
-        "key": "skipNoAssetsFound",
-        "type": "checkbox",
-        "defaultValue": false,
-        "templateOptions": {
-            "label": "Skip when no asset is found",
-            "description": "Skip making a change when no asset is found on the Topdesk person.",
-            "required": false
-        }
+    "type": "checkbox"
+  },
+  {
+    "defaultValue": false,
+    "key": "skipNoAssetsFound",
+    "templateOptions": {
+      "description": "Skip making a change when no asset is found on the Topdesk person.",
+      "label": "Skip when no asset is found",
+      "required": false
     },
-    {
-        "key": "assetsFilter",
-        "type": "textarea",
-        "defaultValue": "Hardware\nSoftware",
-        "templateOptions": {
-            "label": "The type of assets that need to be queried",
-            "description": "Be aware to enter only a single filter on each line and that the filters are case sensitive. Leave empty if you want to query all assets",
-            "required": false,
-            "rows": 5
-        }
-    }
+    "type": "checkbox"
+  },
+  {
+    "defaultValue": false,
+    "key": "ShowDifferences",
+    "templateOptions": {
+      "description": "Enable the differences when accounts are updated.",
+      "label": "Show differences",
+      "required": false
+    },
+    "type": "checkbox"
+  },
+  {
+    "defaultValue": "Hardware\nSoftware",
+    "key": "assetsFilter",
+    "templateOptions": {
+      "description": "Be aware to enter only a single filter on each line and that the filters are case sensitive. Leave empty if you want to query all assets",
+      "label": "The type of assets that need to be queried",
+      "required": false,
+      "rows": 5
+    },
+    "type": "textarea"
+  }
 ]
