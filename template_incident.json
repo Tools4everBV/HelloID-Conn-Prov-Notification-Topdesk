@@ -13,7 +13,7 @@
     "defaultValue": "employeeNumber",
     "key": "TopdeskPersonCorrelation",
     "templateOptions": {
-      "label": "Correltion attribute for resolving the caller in Topdesk",
+      "label": "Correlation attribute for resolving the caller in Topdesk",
       "options": [
         {
           "label": "employeeNumber",
