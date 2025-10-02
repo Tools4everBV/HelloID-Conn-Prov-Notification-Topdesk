@@ -1,231 +1,241 @@
 [
-    {
-        "key": "scriptFlow",
-        "type": "input",
-        "defaultValue": "Incident",
-        "templateOptions": {
-            "label": "Script flow",
-            "disabled": true
+  {
+    "defaultValue": "Incident",
+    "hide": false,
+    "key": "scriptFlow",
+    "templateOptions": {
+      "disabled": true,
+      "label": "Script flow"
+    },
+    "type": "input"
+  },
+  {
+    "defaultValue": "employeeNumber",
+    "key": "TopdeskPersonCorrelation",
+    "templateOptions": {
+      "label": "Correltion attribute for resolving the caller in Topdesk",
+      "options": [
+        {
+          "label": "employeeNumber",
+          "value": "employeeNumber"
         },
-        "hide": false
-    },
-    {
-        "key": "TopdeskPersonCorrelation",
-        "type": "select",
-        "defaultValue": "employeeNumber",
-        "templateOptions": {
-            "label": "Correltion attribute for resolving the caller in Topdesk",
-            "placeholder": "Please select an option",
-            "options": [
-                {
-                    "value": "employeeNumber",
-                    "label": "employeeNumber"
-                },
-                {
-                    "value": "email",
-                    "label": "email"
-                }
-            ]
+        {
+          "label": "email",
+          "value": "email"
         }
+      ],
+      "placeholder": "Please select an option"
     },
-    {
-        "key": "TopdeskPerson",
-        "type": "input",
-        "defaultValue": "{{ Person.PrimaryManager.ExternalId || \"yourFixedFallBackRequesterEmployeeNumber\" }}",
-        "templateOptions": {
-            "label": "Caller",
-            "required": true,
-            "description": "Fixed value or a HelloID variable of the correlation attribute. Make sure you configure a 'fallback' when using a notification variable.\n Example: {{ Person.PrimaryManager.ExternalId || \"123456789\"  }}"
-        }
+    "type": "select"
+  },
+  {
+    "defaultValue": "{{ Person.PrimaryManager.ExternalId || \"yourFixedFallBackRequesterEmployeeNumber\" }}",
+    "key": "TopdeskPerson",
+    "templateOptions": {
+      "description": "Fixed value or a HelloID variable of the correlation attribute. Make sure you configure a 'fallback' when using a notification variable.\n Example: {{ Person.PrimaryManager.ExternalId || \"123456789\"  }}",
+      "label": "Caller",
+      "required": true
     },
-    {
-        "key": "RequestShort",
-        "type": "input",
-        "defaultValue": "Request for laptop {{person.displayname}}",
-        "templateOptions": {
-            "label": "Request short",
-            "description": "Fill in the desired title of the change.",
-            "required": true
-        }
+    "type": "input"
+  },
+  {
+    "defaultValue": "Request for laptop {{person.displayname}}",
+    "key": "RequestShort",
+    "templateOptions": {
+      "description": "Fill in the desired title of the change.",
+      "label": "Request short",
+      "required": true
     },
-    {
-        "key": "RequestDescription",
-        "type": "textarea",
-        "defaultValue": "Please prepare a laptop for the employee below.\n\nName: {{person.Name.NickName}}\nLastname: {{person.Name.FamilyName}}\nExternalID: {{person.externalid}}\n\nTitle: {{Person.PrimaryContract.Title.Name}}\nDepartment: {{Person.PrimaryContract.Department.DisplayName}}\n\nAssets:\n$($account.TopdeskAssets)",
-        "templateOptions": {
-            "label": "Request description",
-            "description": "You can add your own html tags to the incident. Please read the readme for more information",
-            "required": true,
-            "rows": 15
-        }
+    "type": "input"
+  },
+  {
+    "defaultValue": "Please prepare a laptop for the employee below.\n\nName: {{person.Name.NickName}}\nLastname: {{person.Name.FamilyName}}\nExternalID: {{person.externalid}}\n\nTitle: {{Person.PrimaryContract.Title.Name}}\nDepartment: {{Person.PrimaryContract.Department.DisplayName}}\n\nAssets:\n$($account.TopdeskAssets)",
+    "key": "RequestDescription",
+    "templateOptions": {
+      "description": "You can add your own html tags to the incident. Please read the readme for more information",
+      "label": "Request description",
+      "required": true,
+      "rows": 15
     },
-    {
-        "key": "Action",
-        "type": "textarea",
-        "defaultValue": "<strong>Order a laptop</strong>\nTest2",
-        "templateOptions": {
-            "label": "Action",
-            "description": "Fill in the action field if needed. If not used leave empty. You can add your own html tags to the incident. Please read the readme for more information",
-            "rows": 5
-        }
+    "type": "textarea"
+  },
+  {
+    "defaultValue": "<strong>Order a laptop</strong>\nTest2",
+    "key": "Action",
+    "templateOptions": {
+      "description": "Fill in the action field if needed. If not used leave empty. You can add your own html tags to the incident. Please read the readme for more information",
+      "label": "Action",
+      "rows": 5
     },
-    {
-        "key": "Branch",
-        "type": "input",
-        "defaultValue": "Baarn",
-        "templateOptions": {
-            "label": "Branch",
-            "description": "Fill in the branch name that is used in Topdesk. This is a mandatory lookup field. If not provided, the branch in the incident will be automatically populated based on the requester.",
-            "required": false
-        }
+    "type": "textarea"
+  },
+  {
+    "defaultValue": "Baarn",
+    "key": "Branch",
+    "templateOptions": {
+      "description": "Fill in the branch name that is used in Topdesk. This is a mandatory lookup field. If not provided, the branch in the incident will be automatically populated based on the requester.",
+      "label": "Branch",
+      "required": false
     },
-    {
-        "key": "OperatorGroup",
-        "type": "input",
-        "defaultValue": "Applicatiebeheerders",
-        "templateOptions": {
-            "label": "Operator group",
-            "description": "Fill in the operator group name that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident."
-        }
+    "type": "input"
+  },
+  {
+    "defaultValue": "Applicatiebeheerders",
+    "key": "OperatorGroup",
+    "templateOptions": {
+      "description": "Fill in the operator group name that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident.",
+      "label": "Operator group"
     },
-    {
-        "key": "Status",
-        "type": "input",
-        "defaultValue": "secondLine",
-        "templateOptions": {
-            "label": "Status",
-            "description": "Fill in the status of the incident. firstline or secondline."
-        }
+    "type": "input"
+  },
+  {
+    "defaultValue": "secondLine",
+    "key": "Status",
+    "templateOptions": {
+      "description": "Fill in the status of the incident. firstline or secondline.",
+      "label": "Status"
     },
-    {
-        "key": "OperatorCorrelation",
-        "type": "select",
-        "defaultValue": "email",
-        "templateOptions": {
-            "label": "Correltion attribute for resolving the operator in Topdesk",
-            "placeholder": "Please select an option",
-            "options": [
-                {
-                    "value": "employeeNumber",
-                    "label": "employeeNumber"
-                },
-                {
-                    "value": "email",
-                    "label": "email"
-                }
-            ]
+    "type": "input"
+  },
+  {
+    "defaultValue": "email",
+    "key": "OperatorCorrelation",
+    "templateOptions": {
+      "label": "Correltion attribute for resolving the operator in Topdesk",
+      "options": [
+        {
+          "label": "employeeNumber",
+          "value": "employeeNumber"
+        },
+        {
+          "label": "email",
+          "value": "email"
         }
+      ],
+      "placeholder": "Please select an option"
     },
-    {
-        "key": "Operator",
-        "type": "input",
-        "defaultValue": "operator@enyoi.org",
-        "templateOptions": {
-            "label": "Operator",
-            "description": "Fill in the operator value corresponding to the correlation attribute. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident."
-        }
+    "type": "select"
+  },
+  {
+    "defaultValue": "operator@enyoi.org",
+    "key": "Operator",
+    "templateOptions": {
+      "description": "Fill in the operator value corresponding to the correlation attribute. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident.",
+      "label": "Operator"
     },
-    {
-        "key": "Category",
-        "type": "input",
-        "defaultValue": "Middelen",
-        "templateOptions": {
-            "label": "Category",
-            "description": "Fill in the category name that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident."
-        }
+    "type": "input"
+  },
+  {
+    "defaultValue": "Middelen",
+    "key": "Category",
+    "templateOptions": {
+      "description": "Fill in the category name that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident.",
+      "label": "Category"
     },
-    {
-        "key": "SubCategory",
-        "type": "input",
-        "defaultValue": "Verbruiksgoederen",
-        "templateOptions": {
-            "label": "SubCategory",
-            "description": "Fill in the subcategory name that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident."
-        }
+    "type": "input"
+  },
+  {
+    "defaultValue": "Verbruiksgoederen",
+    "key": "SubCategory",
+    "templateOptions": {
+      "description": "Fill in the subcategory name that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident.",
+      "label": "SubCategory"
     },
-    {
-        "key": "CallType",
-        "type": "input",
-        "defaultValue": "Aanvraag",
-        "templateOptions": {
-            "label": "CallType",
-            "description": "Fill in the branch call type that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident."
-        }
+    "type": "input"
+  },
+  {
+    "defaultValue": "Aanvraag",
+    "key": "CallType",
+    "templateOptions": {
+      "description": "Fill in the branch call type that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident.",
+      "label": "CallType"
     },
-    {
-        "key": "Impact",
-        "type": "input",
-        "defaultValue": "Organisatie",
-        "templateOptions": {
-            "label": "Impact",
-            "description": "Fill in the impact name that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident."
-        }
+    "type": "input"
+  },
+  {
+    "defaultValue": "Organisatie",
+    "key": "Impact",
+    "templateOptions": {
+      "description": "Fill in the impact name that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident.",
+      "label": "Impact"
     },
-    {
-        "key": "Priority",
-        "type": "input",
-        "defaultValue": "P1",
-        "templateOptions": {
-            "label": "Priority",
-            "description": "Fill in the priority name that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident."
-        }
+    "type": "input"
+  },
+  {
+    "defaultValue": "P1",
+    "key": "Priority",
+    "templateOptions": {
+      "description": "Fill in the priority name that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident.",
+      "label": "Priority"
     },
-    {
-        "key": "EntryType",
-        "type": "input",
-        "defaultValue": "Telefonisch",
-        "templateOptions": {
-            "label": "EntryType",
-            "description": "Fill in the entry type name that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident."
-        }
+    "type": "input"
+  },
+  {
+    "defaultValue": "Telefonisch",
+    "key": "EntryType",
+    "templateOptions": {
+      "description": "Fill in the entry type name that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident.",
+      "label": "EntryType"
     },
-    {
-        "key": "Urgency",
-        "type": "input",
-        "defaultValue": "Kan niet werken",
-        "templateOptions": {
-            "label": "Urgency",
-            "description": "Fill in the urgency name that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident."
-        }
+    "type": "input"
+  },
+  {
+    "defaultValue": "Kan niet werken",
+    "key": "Urgency",
+    "templateOptions": {
+      "description": "Fill in the urgency name that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident.",
+      "label": "Urgency"
     },
-    {
-        "key": "ProcessingStatus",
-        "type": "input",
-        "defaultValue": "Geregistreerd",
-        "templateOptions": {
-            "label": "ProcessingStatus",
-            "description": "Fill in the processing status name that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident. With the correct processing status, it is possible to create a closed incident."
-        }
+    "type": "input"
+  },
+  {
+    "defaultValue": "Geregistreerd",
+    "key": "ProcessingStatus",
+    "templateOptions": {
+      "description": "Fill in the processing status name that is used in Topdesk. It is possible to disable this lookup field by leaving it empty. If marked mandatory in Topdesk this will be shown when opening the incident. With the correct processing status, it is possible to create a closed incident.",
+      "label": "ProcessingStatus"
     },
-    {
-        "key": "enableGetAssets",
-        "type": "checkbox",
-        "defaultValue": false,
-        "templateOptions": {
-            "label": "Query linked assets",
-            "description": "Use $($account.TopdeskAssets) in your notification configuration to resolve the queried assets. The employee number of the Topdesk person needs to be equal to the HelloID externalID.",
-            "required": false
-        }
+    "type": "input"
+  },
+  {
+    "defaultValue": false,
+    "key": "enableGetAssets",
+    "templateOptions": {
+      "description": "Use $($account.TopdeskAssets) in your notification configuration to resolve the queried assets. The employee number of the Topdesk person needs to be equal to the HelloID externalID.",
+      "label": "Query linked assets",
+      "required": false
     },
-    {
-        "key": "skipNoAssetsFound",
-        "type": "checkbox",
-        "defaultValue": false,
-        "templateOptions": {
-            "label": "Skip when no asset is found",
-            "description": "Skip making a incident when no asset is found on the Topdesk person.",
-            "required": false
-        }
+    "type": "checkbox"
+  },
+  {
+    "defaultValue": false,
+    "key": "skipNoAssetsFound",
+    "templateOptions": {
+      "description": "Skip making a incident when no asset is found on the Topdesk person.",
+      "label": "Skip when no asset is found",
+      "required": false
     },
-    {
-        "key": "assetsFilter",
-        "type": "textarea",
-        "defaultValue": "Hardware\nSoftware",
-        "templateOptions": {
-            "label": "The type of assets that need to be queried",
-            "description": "Be aware to enter only a single filter on each line and that the filters are case sensitive. Leave empty if you want to query all assets",
-            "required": false,
-            "rows": 5
-        }
-    }
+    "type": "checkbox"
+  },
+  {
+    "defaultValue": false,
+    "key": "ShowDifferences",
+    "templateOptions": {
+      "description": "Enable the differences when accounts are updated.",
+      "label": "Show differences",
+      "required": false
+    },
+    "type": "checkbox"
+  },
+  {
+    "defaultValue": "Hardware\nSoftware",
+    "key": "assetsFilter",
+    "templateOptions": {
+      "description": "Be aware to enter only a single filter on each line and that the filters are case sensitive. Leave empty if you want to query all assets",
+      "label": "The type of assets that need to be queried",
+      "required": false,
+      "rows": 5
+    },
+    "type": "textarea"
+  }
 ]
