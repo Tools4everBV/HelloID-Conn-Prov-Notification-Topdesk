@@ -18,27 +18,6 @@ $account = @{
 }
 
 #region functions
-function get-Incident-Differences {
-    $differences = '<br>&nbsp;<br><strong style="font-size : 1.5 em">Difference</strong><br>'
-    foreach($difference in $actionContext.Differences){
-        $differences += "<strong>$($difference.property)</strong> from '<i>$($difference.oldValue)</i>' to '<i>$($difference.newValue)</i>'<br><br>"
-    }
-    return $differences
-}
-
-function get-Change-Differences {
-    $differences = '
-    
-Difference 
-'
-    foreach($difference in $actionContext.Differences){
-        $differences += "$($difference.property) from '$($difference.oldValue)' to '$($difference.newValue)'
-        
-        "
-    }
-    return $differences
-}
-
 function Set-AuthorizationHeaders {
     [CmdletBinding()]
     param (
@@ -171,9 +150,7 @@ function Confirm-Description {
         return $descriptionShortened
     }
     else {
-
         return $Description
-
     }
 }
 
@@ -188,7 +165,6 @@ function Convert-To-HTML-Tag {
     $Description = $Description | ConvertTo-Json
     $Description = $Description.Replace('\n', '<br>')
     $Description = $Description | ConvertFrom-Json
-    
     Write-Output $Description
 }
 
@@ -644,6 +620,43 @@ function Get-TopdeskAssetsByPersonId {
     }
     write-output $assetList
 }
+function Get-Incident-Differences {
+    [CmdletBinding()]
+    param (
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $Description
+    )
+
+    $differences = '<br>&nbsp;<br><strong style="font-size : 1.5 em">Difference</strong><br>'
+    foreach ($difference in $actionContext.Differences) {
+        $differences += "<strong>$($difference.property)</strong> from '<i>$($difference.oldValue)</i>' to '<i>$($difference.newValue)</i>'<br><br>"
+    }
+    $result = $Description + $differences
+    return $result
+}
+
+function Get-Change-Differences {
+    [CmdletBinding()]
+    param (
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $Description
+    )
+    $differences = '
+    
+Difference 
+'
+    foreach ($difference in $actionContext.Differences) {
+        $differences += "$($difference.property) from '$($difference.oldValue)' to '$($difference.newValue)'
+        
+"
+    }
+    $result = $Description + $differences
+    return $result
+}
+
+
 #endregion functions
 
 try {
@@ -723,16 +736,15 @@ try {
         }
 
         # Add differences
-        if($actionContext.TemplateConfiguration.ShowDifferences){
-            $differences = get-Incident-Differences
-            $Description = "$(Format-Description $actionContext.TemplateConfiguration.RequestDescription) $differences"
-        }else{
-            $Description = Format-Description $actionContext.TemplateConfiguration.RequestDescription
+        if ($actionContext.TemplateConfiguration.ShowDifferences) {
+            $description = Get-Incident-Differences -Description $actionContext.TemplateConfiguration.RequestDescription
+        }
+        else {
+            $description = $actionContext.TemplateConfiguration.RequestDescription
         }
 
         $splatParamsRequest = @{
-
-            Description = $Description
+            Description = Format-Description $description
         }
     
         # Add value to request object
@@ -754,9 +766,9 @@ try {
         # Add value to request opject firstLine or secondLine
         if (-not [string]::IsNullOrEmpty($actionContext.TemplateConfiguration.Status)) {
             $requestObject += @{
-                  status = $actionContext.TemplateConfiguration.Status
-              }
-          }
+                status = $actionContext.TemplateConfiguration.Status
+            }
+        }
 
         # Resolve branch id
         if (-not [string]::IsNullOrEmpty($actionContext.TemplateConfiguration.Branch)) {
@@ -1010,16 +1022,16 @@ try {
         }
 
         # Add differences
-        if($actionContext.TemplateConfiguration.ShowDifferences){
-            $differences = get-Change-Differences
-            $Description = "$(Format-Description $actionContext.TemplateConfiguration.Request) $differences"
-        }else{
-            $Description = Format-Description $actionContext.TemplateConfiguration.Request
+        if ($actionContext.TemplateConfiguration.ShowDifferences) {
+            $description = Get-Change-Differences -Description $actionContext.TemplateConfiguration.Request
+        }
+        else {
+            $description = $actionContext.TemplateConfiguration.Request
         }
 
         # Add value to request object
         $requestObject += @{
-            request = $Description
+            request = Format-Description $description
         }
     
         # Validate change type
