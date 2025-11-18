@@ -621,7 +621,7 @@ function Get-TopdeskAssetsByPersonId {
     }
     write-output $assetList
 }
-function Get-Incident-Differences {
+function ConvertDifferencesTo-Html {
     [CmdletBinding()]
     param (
         [ValidateNotNullOrEmpty()]
@@ -637,7 +637,7 @@ function Get-Incident-Differences {
     return $result
 }
 
-function Get-Change-Differences {
+function ConvertDifferencesTo-Text {
     [CmdletBinding()]
     param (
         [ValidateNotNullOrEmpty()]
@@ -738,7 +738,7 @@ try {
 
         # Add differences
         if ($actionContext.TemplateConfiguration.ShowDifferences -and $actionContext.Differences.Count -gt 0) {
-            $description = Get-Incident-Differences -Description $actionContext.TemplateConfiguration.RequestDescription
+            $description = ConvertDifferencesTo-Html -Description $actionContext.TemplateConfiguration.RequestDescription
         }
         else {
             $description = $actionContext.TemplateConfiguration.RequestDescription
@@ -1024,7 +1024,7 @@ try {
 
         # Add differences
         if ($actionContext.TemplateConfiguration.ShowDifferences -and $actionContext.Differences.Count -gt 0) {
-            $description = Get-Change-Differences -Description $actionContext.TemplateConfiguration.Request
+            $description = ConvertDifferencesTo-Text -Description $actionContext.TemplateConfiguration.Request
         }
         else {
             $description = $actionContext.TemplateConfiguration.Request
