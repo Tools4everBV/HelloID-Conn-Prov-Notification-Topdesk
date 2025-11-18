@@ -737,7 +737,7 @@ try {
         }
 
         # Add differences
-        if ($actionContext.TemplateConfiguration.ShowDifferences) {
+        if ($actionContext.TemplateConfiguration.ShowDifferences -and $actionContext.Differences.Count -gt 0) {
             $description = Get-Incident-Differences -Description $actionContext.TemplateConfiguration.RequestDescription
         }
         else {
@@ -1023,7 +1023,7 @@ try {
         }
 
         # Add differences
-        if ($actionContext.TemplateConfiguration.ShowDifferences) {
+        if ($actionContext.TemplateConfiguration.ShowDifferences -and $actionContext.Differences.Count -gt 0) {
             $description = Get-Change-Differences -Description $actionContext.TemplateConfiguration.Request
         }
         else {
