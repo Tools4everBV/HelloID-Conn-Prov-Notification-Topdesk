@@ -136,6 +136,7 @@ The table below describes the different form fields from the template.
 | Priority                 | The priority is commonly filled in the Topdesk change template                                                              |           |
 | EnableGetAssets          | Enable this checkbox for querying the assets that are linked to the person                                                  |           |
 | SkipNoAssetsFound        | Enable this checkbox if creating a change is only required when one or multiple assets are found                            |           |
+| ShowDifferences          | Enable this checkbox if you want to display the updated account fields                                                      |           |
 | AssetsFilter             | The type of assets that need to be queried. Leave empty if querying all assets is required                                  |           |
 
 #### Incidents
@@ -169,6 +170,7 @@ The table below describes the different form fields from the template.
 | ProcessingStatus         | Fill in the processing status name that is used in Topdesk                                                                     |           |
 | EnableGetAssets          | Enable this checkbox for querying the assets that are linked to the person                                                     |           |
 | SkipNoAssetsFound        | Enable this checkbox if creating a incident is only required when one or multiple assets are found                             |           |
+| ShowDifferences          | Enable this checkbox if you want to display the updated account fields                                                         |           |
 | AssetsFilter             | The type of assets that need to be queried. Leave empty if querying all assets is required                                     |           |
 | status                   | Fill in the status of the incident example: firstLine or secondLine                                                            |           |
 
