@@ -621,6 +621,43 @@ function Get-TopdeskAssetsByPersonId {
     }
     write-output $assetList
 }
+function ConvertDifferencesTo-Html {
+    [CmdletBinding()]
+    param (
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $Description
+    )
+
+    $differences = '<br>&nbsp;<br><strong style="font-size : 1.5 em">Difference</strong><br>'
+    foreach ($difference in $actionContext.Differences) {
+        $differences += "<strong>$($difference.property)</strong> from '<i>$($difference.oldValue)</i>' to '<i>$($difference.newValue)</i>'<br><br>"
+    }
+    $result = $Description + $differences
+    return $result
+}
+
+function ConvertDifferencesTo-Text {
+    [CmdletBinding()]
+    param (
+        [ValidateNotNullOrEmpty()]
+        [string]
+        $Description
+    )
+    $differences = '
+    
+Difference 
+'
+    foreach ($difference in $actionContext.Differences) {
+        $differences += "$($difference.property) from '$($difference.oldValue)' to '$($difference.newValue)'
+        
+"
+    }
+    $result = $Description + $differences
+    return $result
+}
+
+
 #endregion functions
 
 try {
@@ -699,9 +736,16 @@ try {
             briefDescription = Confirm-Description @splatParamsValidateRequestShort
         }
 
-    
+        # Add differences
+        if ($actionContext.TemplateConfiguration.ShowDifferences -and $actionContext.Differences.Count -gt 0) {
+            $description = ConvertDifferencesTo-Html -Description $actionContext.TemplateConfiguration.RequestDescription
+        }
+        else {
+            $description = $actionContext.TemplateConfiguration.RequestDescription
+        }
+
         $splatParamsRequest = @{
-            Description = Format-Description $actionContext.TemplateConfiguration.RequestDescription
+            Description = Format-Description $description
         }
     
         # Add value to request object
@@ -977,10 +1021,18 @@ try {
         $requestObject += @{
             briefDescription = Confirm-Description @splatParamsValidateBriefDescription
         }
-    
+
+        # Add differences
+        if ($actionContext.TemplateConfiguration.ShowDifferences -and $actionContext.Differences.Count -gt 0) {
+            $description = ConvertDifferencesTo-Text -Description $actionContext.TemplateConfiguration.Request
+        }
+        else {
+            $description = $actionContext.TemplateConfiguration.Request
+        }
+
         # Add value to request object
         $requestObject += @{
-            request = Format-Description $actionContext.TemplateConfiguration.Request
+            request = Format-Description $description
         }
     
         # Validate change type
