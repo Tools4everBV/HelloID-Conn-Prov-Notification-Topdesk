@@ -3,7 +3,7 @@
 #
 # Version: 1.2.0
 #####################################################
-
+$actionContext.DryRun = $false
 # Enable TLS1.2
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor [System.Net.SecurityProtocolType]::Tls12
 
@@ -191,7 +191,6 @@ function Get-TopdeskPersonByCorrelationAttribute {
         [String]
         $CorrelationAttribute
     )
-
     # Check if the correlationAttribute is not empty
     if ([string]::IsNullOrEmpty($requester)) {
         $errorMessage = "The correlation attribute [$CorrelationAttribute] is empty. This is likely a scripting issue."
@@ -664,6 +663,7 @@ try {
     #region lookup global
     # Setup authentication headers
     $authHeaders = Set-AuthorizationHeaders -UserName $actionContext.Configuration.username -ApiKey $actionContext.Configuration.apiKey
+    $templateconfig = $actionContext.TemplateConfiguration
 
     #requester
     $splatParamsTopdesk = @{
@@ -672,23 +672,44 @@ try {
         Headers              = $authHeaders
         BaseUrl              = $actionContext.Configuration.baseUrl
     }
-
     $TopdeskPerson = Get-TopdeskPersonByCorrelationAttribute @splatParamsTopdesk
 
     # Lookup Assets of person   
     if ($actionContext.TemplateConfiguration.enableGetAssets) {
-        if ($TopdeskPerson.employeeNumber -eq $personContext.Person.ExternalId) {
-            $TopdeskPersonForAssets = $TopdeskPerson
-        }
-        else {
-            $splatParamsTopdeskEmployee = @{
-                Requester            = $personContext.Person.ExternalId
-                CorrelationAttribute = 'employeeNumber'
-                Headers              = $authHeaders
-                BaseUrl              = $actionContext.Configuration.baseUrl
-            }
+        switch ($actionContext.TemplateConfiguration.TopdeskPersonCorrelation) {
+            "employeeNumber" {
+                if ($TopdeskPerson.employeeNumber -eq $personContext.Person.ExternalId) {
+                    $TopdeskPersonForAssets = $TopdeskPerson
+                }
+                else {
+                    $splatParamsTopdeskEmployee = @{
+                        Requester            = $personContext.Person.ExternalId
+                        CorrelationAttribute = 'employeeNumber'
+                        Headers              = $authHeaders
+                        BaseUrl              = $actionContext.Configuration.baseUrl
+                    }
 
-            $TopdeskPersonForAssets = Get-TopdeskPersonByCorrelationAttribute @splatParamsTopdeskEmployee
+                    $TopdeskPersonForAssets = Get-TopdeskPersonByCorrelationAttribute @splatParamsTopdeskEmployee
+                }
+            }
+            "email" {
+                if ($TopdeskPerson.email -eq $personContext.Person.Contact.Business.Email) {
+                    $TopdeskPersonForAssets = $TopdeskPerson
+                }
+                else {
+                    $splatParamsTopdeskEmployee = @{
+                        Requester            = $personContext.Person.Contact.Business.Email
+                        CorrelationAttribute = 'email'
+                        Headers              = $authHeaders
+                        BaseUrl              = $actionContext.Configuration.baseUrl
+                    }
+
+                    $TopdeskPersonForAssets = Get-TopdeskPersonByCorrelationAttribute @splatParamsTopdeskEmployee
+                }
+            }
+            default { 
+                Throw "Asset retrieval: Action configuration [$($actionContext.TemplateConfiguration.TopdeskPersonCorrelation)] is unsupported"
+            }
         }
     
         if (-not[string]::IsNullOrEmpty($($TopdeskPersonForAssets.Id))) {
