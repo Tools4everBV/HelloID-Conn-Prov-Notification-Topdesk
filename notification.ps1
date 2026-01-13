@@ -1,9 +1,9 @@
 #####################################################
 # HelloID-Conn-Prov-Notification-Topdesk
 #
-# Version: 1.2.0
+# Version: 1.4.1
 #####################################################
-$actionContext.DryRun = $false
+
 # Enable TLS1.2
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor [System.Net.SecurityProtocolType]::Tls12
 
