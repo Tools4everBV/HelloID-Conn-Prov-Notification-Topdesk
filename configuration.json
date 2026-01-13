@@ -49,14 +49,5 @@
       "description": "Enabling querying assets can be done after selecting the notification template",
       "required": true
     }
-  },
-  {
-    "key": "isDebug",
-    "type": "checkbox",
-    "defaultValue": false,
-    "templateOptions": {
-      "label": "Toggle debug logging",
-      "required": false
-    }
   }
 ]

@@ -1,17 +1,11 @@
 #####################################################
 # HelloID-Conn-Prov-Notification-Topdesk
 #
-# Version: 1.2.0
+# Version: 1.4.1
 #####################################################
 
 # Enable TLS1.2
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor [System.Net.SecurityProtocolType]::Tls12
-
-# Set debug logging
-switch ($($actionContext.Configuration.IsDebug)) {
-    $true { $VerbosePreference = 'Continue' }
-    $false { $VerbosePreference = 'SilentlyContinue' }
-}
 
 $account = @{
     TopdeskAssets = "'Query linked assets' checkbox is disabled" # Default message shown when using $account.TopdeskAssets
@@ -146,7 +140,7 @@ function Confirm-Description {
         $AllowedLength
     )
     if ($Description.Length -gt $AllowedLength) {
-        Write-Verbose "The attribute [$AttributeName] exceeds the max amount of [$AllowedLength] characters [$Description]. The attribute will be shortened"
+        Write-Information "The attribute [$AttributeName] exceeds the max amount of [$AllowedLength] characters [$Description]. The attribute will be shortened"
         $descriptionShortened = $Description.substring(0, [System.Math]::Min($AllowedLength, $Description.Length))
         return $descriptionShortened
     }
@@ -191,7 +185,6 @@ function Get-TopdeskPersonByCorrelationAttribute {
         [String]
         $CorrelationAttribute
     )
-
     # Check if the correlationAttribute is not empty
     if ([string]::IsNullOrEmpty($requester)) {
         $errorMessage = "The correlation attribute [$CorrelationAttribute] is empty. This is likely a scripting issue."
@@ -290,7 +283,9 @@ function Get-TopdeskIdentifier {
         [Parameter(Mandatory)]
         [ValidateNotNullOrEmpty()]
         [Object]
-        $SearchAttribute
+        $SearchAttribute,
+        [Object]
+        $RequestObject
     )
 
     # Check if property exists in the template object set in the mapping
@@ -303,7 +298,7 @@ function Get-TopdeskIdentifier {
         return
     }
     
-    Write-Verbose "Class [$class]: Variable [$`Value] has value [$($Value)] and endpoint [$($Endpoint)?query=$($SearchAttribute)==$($Value))]"
+    Write-Information "Class [$class]: Variable [$`Value] has value [$($Value)] and endpoint [$($Endpoint)?query=$($SearchAttribute)==$($Value))]"
 
     # Lookup Value is filled in, lookup value in Topdesk
     $splatParams = @{
@@ -314,6 +309,11 @@ function Get-TopdeskIdentifier {
     $responseGet = Invoke-TopdeskRestMethod @splatParams
 
     $result = $responseGet | Where-object $SearchAttribute -eq $Value
+
+    if ($class -eq 'SubCategory' -and ($result | Measure-Object).Count -gt 1) {
+        # Ensure category ID is available or adjust order of operations to guarantee its presence
+        $result = $result | Where-Object { $_.Category.Id -eq $RequestObject.category.id }
+    }
 
     # When attribute $Class with $Value is not found in Topdesk
     if ([string]::IsNullOrEmpty($result.id)) {
@@ -400,7 +400,7 @@ function Set-TopdeskPersonArchiveStatus {
     if ($archiveStatus -ne $TopdeskPerson.status) {
 
         # Archive / unarchive person
-        Write-Verbose "[$archiveUri] person with id [$($TopdeskPerson.id)]"
+        Write-Information "[$archiveUri] person with id [$($TopdeskPerson.id)]"
         $splatParams = @{
             Uri     = "$BaseUrl/tas/api/persons/id/$($TopdeskPerson.id)/$archiveUri"
             Method  = 'PATCH'
@@ -433,7 +433,6 @@ function New-TopdeskIncident {
         Headers = $Headers
         Body    = $TopdeskIncident | ConvertTo-Json
     }
-    #Write-Verbose ($TopdeskIncident | ConvertTo-Json)
     $incident = Invoke-TopdeskRestMethod @splatParams
     Write-Output $incident
 }
@@ -462,10 +461,9 @@ function New-TopdeskChange {
         Headers = $Headers
         Body    = $TopdeskChange | ConvertTo-Json
     }
-    Write-Verbose ($TopdeskChange | ConvertTo-Json)
     $change = Invoke-TopdeskRestMethod @splatParams
 
-    Write-Verbose "Created change with number [$($change.number)]"
+    Write-Information "Created change with number [$($change.number)]"
 
     Write-Output $change
 }
@@ -508,7 +506,7 @@ function Resolve-Variables {
                 $String.Value = $String.Value.Replace($var, $curObject.$_)
             }
             else {
-                Write-Verbose  "Variable [$var] not found"
+                Write-Information  "Variable [$var] not found"
                 $String.Value = $String.Value.Replace($var, $curObject.$_) # Add to override unresolved variables with null
             }
         }
@@ -610,7 +608,7 @@ function Get-TopdeskAssetsByPersonId {
 
     if ([string]::IsNullOrEmpty($assetList)) {
         if ($SkipNoAssets) {
-            Write-Verbose 'Action skipped because no assets are found and [SkipNoAssetsFound = true] is configured'
+            Write-Information 'Action skipped because no assets are found and [SkipNoAssetsFound = true] is configured'
             return
         }
         else {
@@ -672,23 +670,44 @@ try {
         Headers              = $authHeaders
         BaseUrl              = $actionContext.Configuration.baseUrl
     }
-
     $TopdeskPerson = Get-TopdeskPersonByCorrelationAttribute @splatParamsTopdesk
 
     # Lookup Assets of person   
     if ($actionContext.TemplateConfiguration.enableGetAssets) {
-        if ($TopdeskPerson.employeeNumber -eq $personContext.Person.ExternalId) {
-            $TopdeskPersonForAssets = $TopdeskPerson
-        }
-        else {
-            $splatParamsTopdeskEmployee = @{
-                Requester            = $personContext.Person.ExternalId
-                CorrelationAttribute = 'employeeNumber'
-                Headers              = $authHeaders
-                BaseUrl              = $actionContext.Configuration.baseUrl
-            }
+        switch ($actionContext.TemplateConfiguration.TopdeskPersonCorrelation) {
+            "employeeNumber" {
+                if ($TopdeskPerson.employeeNumber -eq $personContext.Person.ExternalId) {
+                    $TopdeskPersonForAssets = $TopdeskPerson
+                }
+                else {
+                    $splatParamsTopdeskEmployee = @{
+                        Requester            = $personContext.Person.ExternalId
+                        CorrelationAttribute = 'employeeNumber'
+                        Headers              = $authHeaders
+                        BaseUrl              = $actionContext.Configuration.baseUrl
+                    }
 
-            $TopdeskPersonForAssets = Get-TopdeskPersonByCorrelationAttribute @splatParamsTopdeskEmployee
+                    $TopdeskPersonForAssets = Get-TopdeskPersonByCorrelationAttribute @splatParamsTopdeskEmployee
+                }
+            }
+            "email" {
+                if ($TopdeskPerson.email -eq $personContext.Person.Contact.Business.Email) {
+                    $TopdeskPersonForAssets = $TopdeskPerson
+                }
+                else {
+                    $splatParamsTopdeskEmployee = @{
+                        Requester            = $personContext.Person.Contact.Business.Email
+                        CorrelationAttribute = 'email'
+                        Headers              = $authHeaders
+                        BaseUrl              = $actionContext.Configuration.baseUrl
+                    }
+
+                    $TopdeskPersonForAssets = Get-TopdeskPersonByCorrelationAttribute @splatParamsTopdeskEmployee
+                }
+            }
+            default { 
+                Throw "Asset retrieval: Action configuration [$($actionContext.TemplateConfiguration.TopdeskPersonCorrelation)] is unsupported"
+            }
         }
     
         if (-not[string]::IsNullOrEmpty($($TopdeskPersonForAssets.Id))) {
@@ -712,7 +731,7 @@ try {
     }
     #endregion lookup global
 
-    Write-Verbose "Scriptflow [$($actionContext.TemplateConfiguration.scriptFlow)]"
+    Write-Information "Scriptflow [$($actionContext.TemplateConfiguration.scriptFlow)]"
 
     #region look incident
     if ($actionContext.TemplateConfiguration.scriptFlow -eq 'Incident') {
@@ -856,6 +875,7 @@ try {
                 Value           = $actionContext.TemplateConfiguration.SubCategory
                 Endpoint        = '/tas/api/incidents/subcategories'
                 SearchAttribute = 'name'
+                RequestObject   = $requestObject
             }
 
             # Add subCategory to request object
@@ -1111,10 +1131,10 @@ try {
 
     #region write
     if (-Not($actionContext.DryRun -eq $true)) {
-        Write-Verbose "Sending notification for: [$($personContext.Person.DisplayName)]"
+        Write-Information "Sending notification for: [$($personContext.Person.DisplayName)]"
 
         if ($TopdeskPerson.status -eq 'personArchived') {
-            Write-Verbose "Topdeskperson [$($TopdeskPerson.id)] will be unarchived"
+            Write-Information "Topdeskperson [$($TopdeskPerson.id)] will be unarchived"
             $shouldArchive = $true
             $splatParamsPersonUnarchive = @{
                 TopdeskPerson   = [ref]$TopdeskPerson
@@ -1146,7 +1166,7 @@ try {
         }
 
         if ($shouldArchive -and $TopdeskPerson.status -ne 'personArchived') {
-            Write-Verbose "Topdeskperson $($TopdeskPerson.id) will be archived"
+            Write-Information "Topdeskperson $($TopdeskPerson.id) will be archived"
             $splatParamsPersonArchive = @{
                 TopdeskPerson   = [ref]$TopdeskPerson
                 Headers         = $authHeaders
@@ -1167,7 +1187,7 @@ try {
         $outputContext.AuditLogs.Add([PSCustomObject]@{
                 Message = "Sending notification [$($actionContext.TemplateConfiguration.scriptFlow)] for: [$($personContext.Person.DisplayName)], will be executed during enforcement"
             })
-        Write-Verbose ($requestObject | ConvertTo-Json)
+        Write-Information ($requestObject | ConvertTo-Json)
     }
     #endregion write
 }
@@ -1194,7 +1214,6 @@ catch {
         }
         
         default {
-            Write-Verbose ($ex | ConvertTo-Json) # Debug - Test
             if ($($ex.Exception.GetType().FullName -eq 'Microsoft.PowerShell.Commands.HttpResponseException') -or
                 $($ex.Exception.GetType().FullName -eq 'System.Net.WebException')) {
                 $errorMessage = "Could not send TOPdesk notification [$($actionContext.TemplateConfiguration.scriptFlow)] for: [$($personContext.Person.DisplayName)]. Error: $($ex.ErrorDetails.Message)"
