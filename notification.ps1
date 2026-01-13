@@ -661,7 +661,6 @@ try {
     #region lookup global
     # Setup authentication headers
     $authHeaders = Set-AuthorizationHeaders -UserName $actionContext.Configuration.username -ApiKey $actionContext.Configuration.apiKey
-    $templateconfig = $actionContext.TemplateConfiguration
 
     #requester
     $splatParamsTopdesk = @{
