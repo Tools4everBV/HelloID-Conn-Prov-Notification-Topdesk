@@ -7,12 +7,6 @@
 # Enable TLS1.2
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor [System.Net.SecurityProtocolType]::Tls12
 
-# Set debug logging
-switch ($($actionContext.Configuration.IsDebug)) {
-    $true { $VerbosePreference = 'Continue' }
-    $false { $VerbosePreference = 'SilentlyContinue' }
-}
-
 $account = @{
     TopdeskAssets = "'Query linked assets' checkbox is disabled" # Default message shown when using $account.TopdeskAssets
 }
@@ -289,7 +283,9 @@ function Get-TopdeskIdentifier {
         [Parameter(Mandatory)]
         [ValidateNotNullOrEmpty()]
         [Object]
-        $SearchAttribute
+        $SearchAttribute,
+        [Object]
+        $RequestObject
     )
 
     # Check if property exists in the template object set in the mapping
@@ -313,6 +309,11 @@ function Get-TopdeskIdentifier {
     $responseGet = Invoke-TopdeskRestMethod @splatParams
 
     $result = $responseGet | Where-object $SearchAttribute -eq $Value
+
+    if ($class -eq 'SubCategory' -and ($result | Measure-Object).Count -gt 1) {
+        # Ensure category ID is available or adjust order of operations to guarantee its presence
+        $result = $result | Where-Object { $_.Category.Id -eq $RequestObject.category.id }
+    }
 
     # When attribute $Class with $Value is not found in Topdesk
     if ([string]::IsNullOrEmpty($result.id)) {
@@ -874,6 +875,7 @@ try {
                 Value           = $actionContext.TemplateConfiguration.SubCategory
                 Endpoint        = '/tas/api/incidents/subcategories'
                 SearchAttribute = 'name'
+                RequestObject   = $requestObject
             }
 
             # Add subCategory to request object
