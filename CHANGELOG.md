@@ -14,6 +14,10 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Asset retrieval now correctly handles cases where requester and person use different correlation attributes
+- Fixed issue #11. When multiple subcategories are found the correct one is now selected.
+
+### Removed
+- Debug toggle, changed `write-verbose` to `write-information`
 
 ## [1.4.0] - 2024
 
