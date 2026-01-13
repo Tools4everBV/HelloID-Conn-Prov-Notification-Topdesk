@@ -146,7 +146,7 @@ function Confirm-Description {
         $AllowedLength
     )
     if ($Description.Length -gt $AllowedLength) {
-        Write-Verbose "The attribute [$AttributeName] exceeds the max amount of [$AllowedLength] characters [$Description]. The attribute will be shortened"
+        Write-Information "The attribute [$AttributeName] exceeds the max amount of [$AllowedLength] characters [$Description]. The attribute will be shortened"
         $descriptionShortened = $Description.substring(0, [System.Math]::Min($AllowedLength, $Description.Length))
         return $descriptionShortened
     }
@@ -302,7 +302,7 @@ function Get-TopdeskIdentifier {
         return
     }
     
-    Write-Verbose "Class [$class]: Variable [$`Value] has value [$($Value)] and endpoint [$($Endpoint)?query=$($SearchAttribute)==$($Value))]"
+    Write-Information "Class [$class]: Variable [$`Value] has value [$($Value)] and endpoint [$($Endpoint)?query=$($SearchAttribute)==$($Value))]"
 
     # Lookup Value is filled in, lookup value in Topdesk
     $splatParams = @{
@@ -399,7 +399,7 @@ function Set-TopdeskPersonArchiveStatus {
     if ($archiveStatus -ne $TopdeskPerson.status) {
 
         # Archive / unarchive person
-        Write-Verbose "[$archiveUri] person with id [$($TopdeskPerson.id)]"
+        Write-Information "[$archiveUri] person with id [$($TopdeskPerson.id)]"
         $splatParams = @{
             Uri     = "$BaseUrl/tas/api/persons/id/$($TopdeskPerson.id)/$archiveUri"
             Method  = 'PATCH'
@@ -432,7 +432,6 @@ function New-TopdeskIncident {
         Headers = $Headers
         Body    = $TopdeskIncident | ConvertTo-Json
     }
-    #Write-Verbose ($TopdeskIncident | ConvertTo-Json)
     $incident = Invoke-TopdeskRestMethod @splatParams
     Write-Output $incident
 }
@@ -461,10 +460,9 @@ function New-TopdeskChange {
         Headers = $Headers
         Body    = $TopdeskChange | ConvertTo-Json
     }
-    Write-Verbose ($TopdeskChange | ConvertTo-Json)
     $change = Invoke-TopdeskRestMethod @splatParams
 
-    Write-Verbose "Created change with number [$($change.number)]"
+    Write-Information "Created change with number [$($change.number)]"
 
     Write-Output $change
 }
@@ -507,7 +505,7 @@ function Resolve-Variables {
                 $String.Value = $String.Value.Replace($var, $curObject.$_)
             }
             else {
-                Write-Verbose  "Variable [$var] not found"
+                Write-Information  "Variable [$var] not found"
                 $String.Value = $String.Value.Replace($var, $curObject.$_) # Add to override unresolved variables with null
             }
         }
@@ -609,7 +607,7 @@ function Get-TopdeskAssetsByPersonId {
 
     if ([string]::IsNullOrEmpty($assetList)) {
         if ($SkipNoAssets) {
-            Write-Verbose 'Action skipped because no assets are found and [SkipNoAssetsFound = true] is configured'
+            Write-Information 'Action skipped because no assets are found and [SkipNoAssetsFound = true] is configured'
             return
         }
         else {
@@ -733,7 +731,7 @@ try {
     }
     #endregion lookup global
 
-    Write-Verbose "Scriptflow [$($actionContext.TemplateConfiguration.scriptFlow)]"
+    Write-Information "Scriptflow [$($actionContext.TemplateConfiguration.scriptFlow)]"
 
     #region look incident
     if ($actionContext.TemplateConfiguration.scriptFlow -eq 'Incident') {
@@ -1132,10 +1130,10 @@ try {
 
     #region write
     if (-Not($actionContext.DryRun -eq $true)) {
-        Write-Verbose "Sending notification for: [$($personContext.Person.DisplayName)]"
+        Write-Information "Sending notification for: [$($personContext.Person.DisplayName)]"
 
         if ($TopdeskPerson.status -eq 'personArchived') {
-            Write-Verbose "Topdeskperson [$($TopdeskPerson.id)] will be unarchived"
+            Write-Information "Topdeskperson [$($TopdeskPerson.id)] will be unarchived"
             $shouldArchive = $true
             $splatParamsPersonUnarchive = @{
                 TopdeskPerson   = [ref]$TopdeskPerson
@@ -1167,7 +1165,7 @@ try {
         }
 
         if ($shouldArchive -and $TopdeskPerson.status -ne 'personArchived') {
-            Write-Verbose "Topdeskperson $($TopdeskPerson.id) will be archived"
+            Write-Information "Topdeskperson $($TopdeskPerson.id) will be archived"
             $splatParamsPersonArchive = @{
                 TopdeskPerson   = [ref]$TopdeskPerson
                 Headers         = $authHeaders
@@ -1188,7 +1186,7 @@ try {
         $outputContext.AuditLogs.Add([PSCustomObject]@{
                 Message = "Sending notification [$($actionContext.TemplateConfiguration.scriptFlow)] for: [$($personContext.Person.DisplayName)], will be executed during enforcement"
             })
-        Write-Verbose ($requestObject | ConvertTo-Json)
+        Write-Information ($requestObject | ConvertTo-Json)
     }
     #endregion write
 }
@@ -1215,7 +1213,6 @@ catch {
         }
         
         default {
-            Write-Verbose ($ex | ConvertTo-Json) # Debug - Test
             if ($($ex.Exception.GetType().FullName -eq 'Microsoft.PowerShell.Commands.HttpResponseException') -or
                 $($ex.Exception.GetType().FullName -eq 'System.Net.WebException')) {
                 $errorMessage = "Could not send TOPdesk notification [$($actionContext.TemplateConfiguration.scriptFlow)] for: [$($personContext.Person.DisplayName)]. Error: $($ex.ErrorDetails.Message)"
