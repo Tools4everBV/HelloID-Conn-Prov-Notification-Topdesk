@@ -110,7 +110,7 @@
     {
         "key": "SubCategory",
         "type": "input",
-        "defaultValue": "Inventaris & apperatuur",
+        "defaultValue": "Inventaris & apparatuur",
         "templateOptions": {
             "label": "SubCategory",
             "description": "Commonly filled in the Topdesk change template. If so leave empty."
