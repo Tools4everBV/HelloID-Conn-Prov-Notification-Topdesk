@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.2]
+
+### Fixed
+- Lookup value in `Get-TopdeskIdentifier` is now URL-encoded, so values containing special characters such as `&` (e.g. in an operator group name) are found
+
 ## [1.4.1]
 
 ### Added
