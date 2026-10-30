@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.2]
+
+### Added
+- Error handling in `Get-TopdeskIdentifier` when multiple records match the lookup value, instead of silently returning multiple ids
+
+### Fixed
+- Lookup values are now URL-encoded in `Get-TopdeskIdentifier`, the person lookup (requester) and the asset template name filter, so values containing special characters such as `&` (e.g. in an operator group name) are found, and values containing an apostrophe (`'`) no longer break the query quotes
+
 ## [1.4.1]
 
 ### Added

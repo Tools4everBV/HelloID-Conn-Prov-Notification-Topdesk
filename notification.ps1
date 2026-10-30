@@ -196,8 +196,16 @@ function Get-TopdeskPersonByCorrelationAttribute {
     }
 
     # Lookup value is filled in, lookup value in Topdesk
+    # Use double quotes around the value when it contains a single quote, escape double quotes with a backslash and URL-encode the result
+    if ($requester.Contains("'")) {
+        $queryValue = [uri]::EscapeDataString('"' + $requester.Replace('"', '\"') + '"')
+    }
+    else {
+        $queryValue = [uri]::EscapeDataString("'" + $requester + "'")
+    }
+
     $splatParams = @{
-        Uri     = "$baseUrl/tas/api/persons?page_size=2&query=$($correlationAttribute)=='$($requester)'"
+        Uri     = "$baseUrl/tas/api/persons?page_size=2&query=$($correlationAttribute)==$queryValue"
         Method  = 'GET'
         Headers = $Headers
     }
@@ -301,8 +309,16 @@ function Get-TopdeskIdentifier {
     Write-Information "Class [$class]: Variable [$`Value] has value [$($Value)] and endpoint [$($Endpoint)?query=$($SearchAttribute)==$($Value))]"
 
     # Lookup Value is filled in, lookup value in Topdesk
+    # Use double quotes around the value when it contains a single quote, escape double quotes with a backslash and URL-encode the result
+    if ($Value.Contains("'")) {
+        $queryValue = [uri]::EscapeDataString('"' + $Value.Replace('"', '\"') + '"')
+    }
+    else {
+        $queryValue = [uri]::EscapeDataString("'" + $Value + "'")
+    }
+
     $splatParams = @{
-        Uri     = $baseUrl + $Endpoint + "?query=" + $SearchAttribute + "==" + "'$Value'"
+        Uri     = $baseUrl + $Endpoint + "?query=" + $SearchAttribute + "==" + $queryValue
         Method  = 'GET'
         Headers = $Headers
     }
@@ -322,6 +338,13 @@ function Get-TopdeskIdentifier {
                 Message = $errorMessage
                 IsError = $true
             }) 
+    }
+    elseif (($result | Measure-Object).Count -gt 1) {
+        $errorMessage = "Multiple [$(($result | Measure-Object).Count)] records of class [$Class] found with SearchAttribute [$SearchAttribute] with value [$Value]. Ids: [$($result.id -join ', ')]"
+        $outputContext.AuditLogs.Add([PSCustomObject]@{
+                Message = $errorMessage
+                IsError = $true
+            })
     }
     else {
         # $id is found in Topdesk, set in Topdesk
@@ -570,7 +593,7 @@ function Get-TopdeskAssetsByPersonId {
         foreach ($item in $AssetFilter) {
             # Lookup value is filled in, lookup value in Topdesk
             $splatParams = @{
-                Uri     = "$baseUrl/tas/api/assetmgmt/assets?archived='false'&templateName=$item&linkedTo=person/$PersonId"
+                Uri     = "$baseUrl/tas/api/assetmgmt/assets?archived='false'&templateName=$([uri]::EscapeDataString($item))&linkedTo=person/$PersonId"
                 Method  = 'GET'
                 Headers = $Headers
             }
