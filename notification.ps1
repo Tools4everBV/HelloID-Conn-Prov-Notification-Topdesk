@@ -430,7 +430,19 @@ function Set-TopdeskPersonArchiveStatus {
             Headers = $Headers
             Body    = $body | ConvertTo-Json
         }
-        $null = Invoke-TopdeskRestMethod @splatParams
+        try {
+            $null = Invoke-TopdeskRestMethod @splatParams
+        }
+        catch {
+            # Catch the error when the person is already archived or unarchived in TOPdesk
+            $errorDetails = "$($_.ErrorDetails.Message) $($_.Exception.Message)"
+            if ($errorDetails -like '*already archived*' -or $errorDetails -like '*already unarchived*') {
+                Write-Information "Person with id [$($TopdeskPerson.id)] is already [$archiveStatus], skipping [$archiveUri]. Message: $($_.ErrorDetails.Message)"
+            }
+            else {
+                throw
+            }
+        }
         $TopdeskPerson.status = $archiveStatus
     }
 }

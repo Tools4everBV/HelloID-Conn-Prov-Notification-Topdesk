@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Lookup values are now URL-encoded in `Get-TopdeskIdentifier`, the person lookup (requester) and the asset template name filter, so values containing special characters such as `&` (e.g. in an operator group name) are found, and values containing an apostrophe (`'`) no longer break the query quotes
+- Already archived or unarchived errors are now ignored
 
 ## [1.4.1]
 
