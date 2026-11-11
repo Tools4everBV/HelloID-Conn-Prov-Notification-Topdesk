@@ -440,7 +440,7 @@ function Set-TopdeskPersonArchiveStatus {
                 Write-Information "Person with id [$($TopdeskPerson.id)] is already [$archiveStatus], skipping [$archiveUri]. Message: $($_.ErrorDetails.Message)"
             }
             else {
-                throw
+                throw $_
             }
         }
         $TopdeskPerson.status = $archiveStatus
