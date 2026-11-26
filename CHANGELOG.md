@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [1.4.2]
 
 ### Added
+- HelloID Icon URL in the README
 - Error handling in `Get-TopdeskIdentifier` when multiple records match the lookup value, instead of silently returning multiple ids
 
 ### Fixed
