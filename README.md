@@ -18,6 +18,7 @@
   - [Table of contents](#table-of-contents)
   - [Introduction](#introduction)
   - [Getting started](#getting-started)
+    - [HelloID Icon URL](#helloid-icon-url)
     - [Prerequisites](#prerequisites)
     - [Connection settings](#connection-settings)
     - [Permissions](#permissions)
@@ -33,6 +34,15 @@
 _HelloID-Conn-Prov-Notification-Topdesk_ is a _notifcation_ connector. Topdesk provides a set of REST APIs that allow you to programmatically interact with its data. The [Topdesk API documentation](https://developers.topdesk.com/explorer/?page=supporting-files#/) provides details of API commands that are used.
 
 ## Getting started
+
+### HelloID Icon URL
+
+URL of the icon used for the HelloID Provisioning notification system.
+
+```
+https://raw.githubusercontent.com/Tools4everBV/HelloID-Conn-Prov-Notification-Topdesk/refs/heads/main/Icon.png
+```
+
 ### Prerequisites
 
   - Archiving reason that is configured in Topdesk
